@@ -4,9 +4,12 @@
       "maxDuration": 60
     }
   },
-  "crons": {
-    "*/2 * * * *": "app/api/cron/update-profits.js"
-  },
+  "crons": [
+    {
+      "path": "/api/cron/update-profits",
+      "schedule": "*/2 * * * *"
+    }
+  ],
   "build": {
     "env": {
       "MONGODB_URI": "@mongodb_uri",
