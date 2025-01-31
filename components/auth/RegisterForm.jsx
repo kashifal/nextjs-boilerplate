@@ -1,121 +1,47 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import NextImage from 'next/image';
 
-export default function RegisterForm() {
+export default function RegisterForm({ initialReferralCode }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referralCode = initialReferralCode || searchParams.get('ref');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
 
     try {
       setLoading(true);
       
-      // Special handling for admin
-      if (email === 'admin@example.com' && name === 'admin') {
-        // Try login first
-        const loginRes = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }),
-        });
-
-        const loginData = await loginRes.json();
-        console.log(loginData,'data out')
-
-        if (loginRes.ok) {
-          console.log(loginData,'data');
-          localStorage.setItem('auth_token', loginData.user.id);
-          localStorage.setItem('is_admin', 'true');
-          router.push('/admin');
-          return;
-        }
-
-        // If login fails (user doesn't exist), then try registration
-        const registerRes = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            username: name, 
-            email, 
-            status: 'ACTIVE',
-            role: 'admin'
-          }),
-        });
-
-        const registerData = await registerRes.json();
-
-        if (registerRes.ok) {
-          localStorage.setItem('is_admin', 'true');
-          router.push('/admin');
-          return;
-        } else {
-          setError(registerData.error || 'Registration failed. Please try again.');
-        }
-      }
-
-      // Regular user flow continues here
-      const signInRes = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          username: name, 
+          email,
+          referralCode // Include the referral code from URL
+        }),
       });
 
-      const signInData = await signInRes.json();
+      const data = await response.json();
 
-      if (signInRes.ok) {
-        // User exists, handle as login
-        if (signInData.role === 'admin') {
-          localStorage.setItem('is_admin', 'true');
-        } else {
-          localStorage.setItem('is_admin', 'false');
-        }
-        router.push(`/verify?email=${email}&name=${name}`);
+      if (response.ok) {
+        router.push(`/verify?email=${encodeURIComponent(email)}`);
       } else {
-        // User doesn't exist, handle as registration
-        const registerRes = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            username: name, 
-            email, 
-            status: 'ACTIVE',
-            role: email === 'admin@example.com' ? 'admin' : 'user'
-          }),
-        });
-
-        const registerData = await registerRes.json();
-
-        if (registerRes.ok) {
-          if (registerData.user.role === 'admin') {
-            localStorage.setItem('is_admin', 'true');
-          } else {
-            localStorage.setItem('is_admin', 'false');
-          }
-          router.push(`/verify?email=${email}&name=${name}`);
-        } else {
-          setError(registerData.error || 'Registration failed. Please try again.');
-        }
+        setError(data.error || 'Registration failed');
       }
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.');
-      console.error('Auth error:', error);
+      setError('An error occurred during registration');
     } finally {
       setLoading(false);
     }
@@ -160,6 +86,12 @@ export default function RegisterForm() {
           </div>
 
           <h1 className="text-left text-[20px] font-semibold text-gray-200">Login - Sign up to your account</h1>
+
+          {referralCode && (
+            <p className="text-center text-sm text-gray-400">
+              Referred by: {referralCode}
+            </p>
+          )}
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">

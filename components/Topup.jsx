@@ -257,7 +257,7 @@ const TopUp = ({drawer , setdrawer}) => {
               }`}
             >
              <img
-              src={'http://localhost:3001/'+icon}
+              src={'http://localhost:3000/'+icon}
                
               fill
               className="rounded-full h-8 w-8"
@@ -357,7 +357,7 @@ const TopUp = ({drawer , setdrawer}) => {
             {selectedCoin !== null && (
               <>
                 <img 
-                  src={'http://localhost:3001/' + coins[selectedCoin]?.icon} 
+                  src={'http://localhost:3000/' + coins[selectedCoin]?.icon} 
                   alt={coins[selectedCoin]?.name}
                   className="w-8 h-8 rounded-full"
                 />
@@ -372,7 +372,7 @@ const TopUp = ({drawer , setdrawer}) => {
               {/* Replace with actual QR code */}
               <div className=" bg-white">
                 {/* Add your QR code here */}
-                <img src={`http://localhost:3001/${coins[selectedCoin]?.qrcode}`} alt="" />
+                <img src={`http://localhost:3000/${coins[selectedCoin]?.qrcode}`} alt="" />
               </div>
             </div>
             

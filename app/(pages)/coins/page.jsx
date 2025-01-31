@@ -19,7 +19,7 @@ const CoinCard = ({ coin, amount, symbol }) => {
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 relative">
             <img
-              src={'http://localhost:3001/'+coin.icon}
+              src={'http://localhost:3000/'+coin.icon}
               alt={coin.name}
               fill
               className="rounded-full"

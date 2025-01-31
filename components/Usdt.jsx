@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
 
-const Usdt = () => {
+const Usdt = ({ stats }) => {
         const [topups, setTopups] = useState([]);
         const [totalApprovedAmount, setTotalApprovedAmount] = useState(0);
         const [coinRate, setCoinRate] = useState(null);
@@ -56,7 +56,7 @@ const Usdt = () => {
                                                 url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
                                                 headers: {
                                                         'Accept': 'text/plain',
-                                                        'X-CoinAPI-Key': '670ccc51-6c4b-4cf8-b1f2-195e5ff5df78'
+                                                        'X-CoinAPI-Key': 'dacbfd0e-b96f-4b95-9e52-1a18439ceff0'
                                                 }
                                         });
 
@@ -92,7 +92,7 @@ const Usdt = () => {
                                 url: `https://rest.coinapi.io/v1/exchangerate/${coinSymbol}/USDT`,
                                 headers: {
                                         'Accept': 'text/plain',
-                                        'X-CoinAPI-Key': '670ccc51-6c4b-4cf8-b1f2-195e5ff5df78'
+                                        'X-CoinAPI-Key': 'dacbfd0e-b96f-4b95-9e52-1a18439ceff0'
                                 }
                         });
                         
@@ -136,7 +136,7 @@ const Usdt = () => {
 
         return (
                 <div className="max-w-full mx-6 my-12 bg-white gap-10 bg-white py-12 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 p-6">
-                       
+                       {/* <pre>{JSON.stringify(stats, null, 2)}</pre> */}
                         <div className="  flex flex-col md:border-r-2   border-gray-200  lg:mr-5 ">
                                 <div className="w-12 h-12 bg-[#a8e7c4] rounded-full flex items-center justify-center">
                                         <span className=" text-[48px]"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,7 +148,7 @@ const Usdt = () => {
                                         <path fillRule="evenodd" clipRule="evenodd" d="M13.6668 7.00016C13.6668 10.6821 10.6821 13.6668 7.00016 13.6668C3.31826 13.6668 0.333496 10.6821 0.333496 7.00016C0.333496 3.31826 3.31826 0.333496 7.00016 0.333496C10.6821 0.333496 13.6668 3.31826 13.6668 7.00016ZM7.00016 6.3335C7.36835 6.3335 7.66683 6.63197 7.66683 7.00016V10.3341C7.66683 10.7023 7.36835 11.0008 7.00016 11.0008C6.63197 11.0008 6.3335 10.7023 6.3335 10.3341V7.00016C6.3335 6.63197 6.63197 6.3335 7.00016 6.3335ZM7.00016 5.00016C7.36835 5.00016 7.66683 4.70169 7.66683 4.3335C7.66683 3.96531 7.36835 3.66683 7.00016 3.66683C6.63197 3.66683 6.3335 3.96531 6.3335 4.3335C6.3335 4.70169 6.63197 5.00016 7.00016 5.00016Z" fill="#6F767E" />
                                 </svg>
                                 </span></h3>
-                                <p className="text-[32px] font-[600] mt-1">{totalApprovedAmount} USDT</p>
+                                <p className="text-[32px] font-[600] mt-1">{stats.totalProfitUSDT.toFixed(2)} USDT</p>
                                 <p className="text-[#83BF6E] bg-[#FCFCFC] rounded-[4px] p-1 max-w-[142px]  font-medium text-[12px] flex gap-1 items-center mt-2"> <span><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M1 6L6 1L11 6" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         <path d="M6 13V1" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" />
@@ -169,7 +169,7 @@ const Usdt = () => {
                                         <path fillRule="evenodd" clipRule="evenodd" d="M13.6668 7.00016C13.6668 10.6821 10.6821 13.6668 7.00016 13.6668C3.31826 13.6668 0.333496 10.6821 0.333496 7.00016C0.333496 3.31826 3.31826 0.333496 7.00016 0.333496C10.6821 0.333496 13.6668 3.31826 13.6668 7.00016ZM7.00016 6.3335C7.36835 6.3335 7.66683 6.63197 7.66683 7.00016V10.3341C7.66683 10.7023 7.36835 11.0008 7.00016 11.0008C6.63197 11.0008 6.3335 10.7023 6.3335 10.3341V7.00016C6.3335 6.63197 6.63197 6.3335 7.00016 6.3335ZM7.00016 5.00016C7.36835 5.00016 7.66683 4.70169 7.66683 4.3335C7.66683 3.96531 7.36835 3.66683 7.00016 3.66683C6.63197 3.66683 6.3335 3.96531 6.3335 4.3335C6.3335 4.70169 6.63197 5.00016 7.00016 5.00016Z" fill="#6F767E" />
                                 </svg>
                                 </span></h3>
-                                <p className="text-[32px] font-[600] mt-1">18,765 USDT</p>
+                                <p className="text-[32px] font-[600] mt-1">{stats.totalStakedUSDT.toFixed(2)} USDT</p>
                                 <p className="text-[#FF6A55] bg-[#FCFCFC] rounded-[4px] p-1 max-w-[142px] font-medium text-[12px] flex gap-1 items-center mt-2"> <span><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M11 8L6 13L1 8" stroke="#FF6A55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         <path d="M6 0.999999L6 13" stroke="#FF6A55" strokeWidth="2" strokeLinecap="round" />
@@ -192,7 +192,7 @@ const Usdt = () => {
                                 </svg>
                                 </span></h3>
                                 <p className="text-[32px] font-[600] mt-1">
-                                        {(users.length) - 1}
+                                        {stats.totalUsers}
                                 </p>
 
                         </div>

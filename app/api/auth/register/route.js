@@ -2,15 +2,23 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import User from '@/models/user';
 import { sendOTPEmail } from '@/lib/mail';
+import Referral from '@/models/referral';
+
+// Function to generate a random referral code
+const generateReferralCode = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
 
 export async function POST(req) {
-  
- 
-  
   try {
     await connectDB();
     
-    const { email, username, status, role } = await req.json();
+    const { email, username, status, role, referralCode: referrerCode } = await req.json();
 
     // Validate input
     if (!email || !username) {
@@ -29,17 +37,28 @@ export async function POST(req) {
       );
     }
 
-    // Create new user without username field
+    // Generate a unique referral code
+    let newReferralCode;
+    let isUnique = false;
+    while (!isUnique) {
+      newReferralCode = generateReferralCode();
+      const existing = await User.findOne({ referralCode: newReferralCode });
+      if (!existing) {
+        isUnique = true;
+      }
+    }
+
+    // Create new user with referral code
     const userData = {
       email,
-      username: username,
+      username,
       role: role || 'user',
       status: status || 'ACTIVE',
+      referralCode: newReferralCode
     };
 
-    // Only add OTP fields if role is not admin
+    // Generate OTP if not admin
     if (role !== 'admin') {
-      // Generate OTP
       const otp = Math.floor(Math.random() * 9000 + 1000).toString();
       const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
       
@@ -51,13 +70,24 @@ export async function POST(req) {
 
     const user = await User.create(userData);
 
-    // Send OTP email only if role is not admin
+    // Handle referral if referrer code exists
+    if (referrerCode) {
+      const referrer = await User.findOne({ referralCode: referrerCode });
+      if (referrer) {
+        await Referral.create({
+          referrer: referrer._id,
+          referred: user._id,
+          status: 'PENDING'
+        });
+      }
+    }
+
+    // Send OTP email if not admin
     if (role !== 'admin') {
       try {
         await sendOTPEmail(email, userData.otp.code);
       } catch (emailError) {
         console.error('Email sending error:', emailError);
-        // Delete the created user if email fails
         await User.findByIdAndDelete(user._id);
         return NextResponse.json(
           { error: 'Failed to send verification email' },
@@ -72,16 +102,13 @@ export async function POST(req) {
         id: user._id,
         email: user.email,
         role: user.role,
-        username: user.username
+        username: user.username,
+        referralCode: user.referralCode
       }
     });
 
   } catch (error) {
-    console.error('Registration error:', {
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
+    console.error('Registration error:', error);
 
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
@@ -92,7 +119,7 @@ export async function POST(req) {
     }
 
     return NextResponse.json(
-      { error: error },
+      { error: 'Registration failed' },
       { status: 500 }
     );
   }

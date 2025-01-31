@@ -4,10 +4,25 @@ import QRCodeModal from "@/components/QRmodal";
 import Stake from "@/components/Stake";
 import WithDrawCoin from "@/components/Conwithdraw";
 import WithdrawTo from "@/components/withdraw";
+import StakingHistory from "@/components/StakingHistory";
 
 import Image from "next/image";
 import { useEffect } from "react";
 import axios from 'axios';
+
+// Add this function at the top of the file, after the imports
+const getCoinBalance = (coinId, topups) => {
+  if (!topups || !coinId) return 0;
+  
+  const coinTopups = topups.filter(topup => 
+    topup.coin === coinId && 
+    topup.status === 'APPROVED'
+  );
+
+  const totalAmount = coinTopups.reduce((sum, topup) => sum + topup.amount, 0);
+  
+  return totalAmount;
+};
 
 const StackingBanner = () => {
   const [drawer, setdrawer] = useState(false);
@@ -249,7 +264,7 @@ const StackingBanner = () => {
   useEffect(() => {
     if (topups.length && coins.length) {
       // Group topups by coin name
-      const grouped = coins.reduce((acc, coin) => {
+      const grouped = coins.map(coin => {
         const coinTopups = topups
           .filter(topup => topup.coin === coin._id)
           .filter(topup => topup.status === 'APPROVED')
@@ -258,29 +273,17 @@ const StackingBanner = () => {
             amount: topup.amount
           }));
 
-        if (coinTopups.length > 0) {
-          const totalAmount = coinTopups.reduce((sum, topup) => sum + topup.amount, 0);
+        const totalAmount = coinTopups.reduce((sum, topup) => sum + topup.amount, 0);
 
-          acc.push({
-            coin_name: coin.name.toLowerCase(),
-            coins_data: coinTopups,
-            total_amount: totalAmount
-          });
-        }
+        return {
+          ...coin,
+          balance: totalAmount // Add balance to coin object
+        };
+      });
 
-        return acc;
-      }, []);
-
-      // Calculate total balance across all coins
-      const overallTotal = grouped.reduce((sum, coin) => sum + coin.total_amount, 0);
-
-      setGroupedCoins(grouped);
-      setTotalBalance(overallTotal);
-
-      console.log('Grouped coins:', grouped);
-      console.log('Total balance across all coins:', overallTotal);
+      setCoins(grouped);
     }
-  }, [topups, coins]);
+  }, [topups]);
 
   useEffect(() => {
     fetchTopups();
@@ -334,7 +337,7 @@ const StackingBanner = () => {
             url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
             headers: {
               'Accept': 'text/plain',
-              'X-CoinAPI-Key': '670ccc51-6c4b-4cf8-b1f2-195e5ff5df78'
+              'X-CoinAPI-Key': 'dacbfd0e-b96f-4b95-9e52-1a18439ceff0'
             }
           });
 
@@ -369,13 +372,16 @@ const StackingBanner = () => {
   const gradientStyle = {
     background: "linear-gradient(135deg, #3096FE, #4F96DD, #5136B1, #7064C9)",
   };
+
   return (
     <>
 
       <div className="max-w-7xl px-4 mx-auto mt-10">
+        {/* <StakingHistory /> */}
         <div style={gradientStyle} className="rounded-[12px] py-6 px-4">
           <div className="w-[93%] flex items-center justify-between gap-5 flex-wrap mx-auto">
             <div className="">
+            {/* <pre>{JSON.stringify(coins, null, 2)}</pre> */}
               <h4 className="text-[18px] font-medium">Total Balance</h4>
               <div className="flex items-center gap-5 mt-5">
                 <h1 className="font-[700] text-3xl sm:text-[40px]">
@@ -476,7 +482,7 @@ const StackingBanner = () => {
 // Rename and update the modal component
 
 
-const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
+const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => {
   const [selectedDuration, setSelectedDuration] = useState(60);
   const [lockedAmount, setLockedAmount] = useState("");
   const [autoStaking, setAutoStaking] = useState(false);
@@ -505,75 +511,6 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
 
   const [updatedCoinRate, setUpdatedCoinRate] = useState(coin);
   const handleConfirm = async () => {
-
-    //convert usdt back to coin
-    try {
-      const response = await axios({
-        method: 'get',
-        url: `https://rest.coinapi.io/v1/exchangerate/USDT/${coin.name}`,
-        headers: {
-          'Accept': 'text/plain',
-          'X-CoinAPI-Key': '670ccc51-6c4b-4cf8-b1f2-195e5ff5df78'
-        }
-      });
-
-      const rate = response.data.rate.toFixed(2);
-
-      console.log(`reverse rate ${rate * parseFloat(lockedAmount)} , coin ${JSON.stringify(coin)}`);
-      setUpdatedCoinRate({ ...coin, rate: rate * parseFloat(lockedAmount) });
-    } catch (error) {
-      console.error(`Error fetching rate for ${coin.name}:`, error);
-
-    }
-    return;
-
-    const handleConfirmTopup = async () => {
-      try {
-        if (!selectedTopup?._id) {
-          throw new Error('No topup selected');
-        }
-
-        const response = await fetch(`/api/topup/${selectedTopup._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount: updatedCoinRate.rate // Send the converted rate amount
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to update topup');
-        }
-
-        // Refresh topups list
-        await fetchTopups();
-        // Close modal/drawer
-        setShowQRModal(false);
-        setdrawer(false);
-
-        // Show success message
-        toast.success('Topup amount updated successfully');
-
-      } catch (error) {
-        console.error('Error updating topup:', error);
-        toast.error(error.message || 'Failed to update topup');
-      }
-    };
-
-    try {
-      const response = await axios.put(`/api/topup/`, {
-        coin: coin._id,
-        amount: rate * parseFloat(lockedAmount)
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error(`Error updating coin ${coin.name}:`, error);
-    }
-
-
-
     try {
       setIsSubmitting(true);
 
@@ -585,19 +522,17 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
         user: JSON.parse(localStorage.getItem('user')).id,
         coin: {
           name: coin?.name,
-          id: coin?._id, // Make sure this matches the coin ID from your database
+          id: coin?._id,
         },
         stakingDetails: {
           duration: parseInt(selectedDuration),
-          apy: selectedAPR.toString(),
+          apy: parseFloat(selectedAPR),
           lockedAmount: parseFloat(lockedAmount),
           autoStakingEnabled: autoStaking,
           startDate: startDateObj.toISOString(),
           endDate: endDateObj.toISOString(),
         }
       };
-
-      console.log('Sending staking info:', stakingInfo); // Debug log
 
       const response = await fetch('/api/staking', {
         method: 'POST',
@@ -607,26 +542,29 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
         body: JSON.stringify(stakingInfo),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create stake');
+        throw new Error('Failed to create stake');
       }
 
-      console.log('Staking created:', data);
+      // Refresh topups and close modal
+      await fetchTopups();
       onClose();
+      toast.success('Staking created successfully');
+
     } catch (error) {
       console.error('Error creating stake:', error);
-      // You might want to add a toast notification here
-      alert(error.message);
+      toast.error(error.message || 'Failed to create stake');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Get the coin's balance
+  const coinBalance = getCoinBalance(coin._id, topups);
+
   return (
     <div className="fixed z-[999999] inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="w-[32rem] rounded-lg overflow-auto bg-white p-6 shadow-lg">
+      <div className="w-[32rem] rounded-lg overflow-auto bg-white p-6 max-h-[80vh] shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl text-black font-semibold">Stake {coin?.name}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -655,6 +593,9 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
           </div>
         </div>
 
+        {/* <pre className="text-sm text-gray-800">{JSON.stringify(coin, null, 2)}</pre>
+        <pre className="text-sm text-gray-800">{JSON.stringify(topups, null, 2)}</pre> */}
+
         <div className="mb-6">
           <h3 className="text-base text-black mb-2">Locked amount</h3>
           <div className="relative">
@@ -663,29 +604,29 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose }) => {
               value={lockedAmount}
               onChange={(e) => {
                 const value = parseFloat(e.target.value);
-                if (isNaN(value) || value <= parseFloat(totalApprovedAmount)) {
+                if (isNaN(value) || value <= coinBalance) {
                   setLockedAmount(e.target.value);
                 }
               }}
               min="0"
-              max={totalApprovedAmount}
+              max={coinBalance}
               className="w-full p-3 text-black border border-gray-200 rounded-lg"
               placeholder="0.00"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <img
-                src={`http://localhost:3001/usdt.png`}
-                alt="usdt"
+                src={`http://localhost:3000/${coin?.logoUrl}`}
+                alt={coin?.name}
                 className="w-6 h-6 rounded-full"
               />
-              <span className="text-black">USDT</span>
+              <span className="text-black">{coin?.name}</span>
             </div>
           </div>
           <div className="text-sm text-gray-500 mt-2">
-            Available balance: {totalApprovedAmount || '0.00'} USDT
+            Available balance: {coinBalance.toFixed(2)} {coin?.name}
           </div>
           <div className="text-sm text-gray-500 mt-1">
-            Minimum: 50 USDT
+            Minimum: 50 {coin?.name}
           </div>
         </div>
 
@@ -788,9 +729,7 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-700">
             Choose coin to stake
-          </h2>
-
-          <pre>{JSON.stringify(topups, null, 2)}</pre>
+          </h2> 
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <svg
               width={34}
@@ -808,46 +747,53 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
           </button>
         </div>
         <div className="mb-6 grid grid-cols-2 md:grid-cols-3 gap-4">
-          {coins.map((coin, index) => (
-            <div
-              key={coin._id}
-              onClick={() => setSelectedCoin(index)}
-              className={`relative flex flex-col items-center text-center rounded-2xl border p-4 cursor-pointer ${selectedCoin === index ? "border-green-500 bg-green-100" : ""
+          {coins.map((coin, index) => {
+            const balance = getCoinBalance(coin._id, topups);
+            return (
+              <div
+                key={coin._id}
+                onClick={() => setSelectedCoin(index)}
+                className={`relative flex flex-col items-center text-center rounded-2xl border p-4 cursor-pointer ${
+                  selectedCoin === index ? "border-green-500 bg-green-100" : ""
                 }`}
-            >
-              <img
-                src={`http://localhost:3001/${coin.logoUrl}`}
-                alt={coin.name}
-                className="rounded-full h-8 w-8"
-              />
-              <span className="text-sm font-medium mt-[20px] text-black">
-                {coin.name}
-              </span>
-              {selectedCoin === index && (
-                <svg
-                  width="25"
-                  height="25"
-                  className="absolute -top-2 -right-[6px]"
-                  viewBox="0 0 25 25"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="12.5"
-                    cy="12.5"
-                    r="11.75"
-                    fill="white"
-                    stroke="#34CA1D"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M11.25 15.5C11.2494 15.5 11.2489 15.5 11.2477 15.5C11.092 15.4994 10.9438 15.437 10.8347 15.3262L8.50137 12.9567C8.27503 12.7268 8.27795 12.3576 8.50779 12.1318C8.73762 11.9061 9.10628 11.9084 9.33262 12.1382L11.2535 14.0889L16.6715 8.67149C16.8996 8.44341 17.2683 8.44341 17.4964 8.67149C17.7244 8.89899 17.7244 9.26882 17.4964 9.49632L11.663 15.3297C11.5534 15.4387 11.4046 15.5 11.25 15.5Z"
-                    fill="#34CA1D"
-                  />
-                </svg>
-              )}
-            </div>
-          ))}
+              >
+                <img
+                  src={`http://localhost:3000/${coin.logoUrl}`}
+                  alt={coin.name}
+                  className="rounded-full h-8 w-8"
+                />
+                <span className="text-sm font-medium mt-[20px] text-black">
+                  {coin.name}
+                </span>
+                <span className="text-xs text-gray-500">
+                  Balance: {balance.toFixed(2)}
+                </span>
+                {selectedCoin === index && (
+                  <svg
+                    width="25"
+                    height="25"
+                    className="absolute -top-2 -right-[6px]"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12.5"
+                      cy="12.5"
+                      r="11.75"
+                      fill="white"
+                      stroke="#34CA1D"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M11.25 15.5C11.2494 15.5 11.2489 15.5 11.2477 15.5C11.092 15.4994 10.9438 15.437 10.8347 15.3262L8.50137 12.9567C8.27503 12.7268 8.27795 12.3576 8.50779 12.1318C8.73762 11.9061 9.10628 11.9084 9.33262 12.1382L11.2535 14.0889L16.6715 8.67149C16.8996 8.44341 17.2683 8.44341 17.4964 8.67149C17.7244 8.89899 17.7244 9.26882 17.4964 9.49632L11.663 15.3297C11.5534 15.4387 11.4046 15.5 11.25 15.5Z"
+                      fill="#34CA1D"
+                    />
+                  </svg>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <button

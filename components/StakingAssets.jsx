@@ -1,7 +1,7 @@
-"use client"
+
 import React, { useState, useEffect } from "react";
 
-const StakingAssets = () => {
+const StakingAssets = ({stats}) => {
 
   const [topups, setTopups] = useState([]);
   const [coins, setCoins] = useState([]);
@@ -222,6 +222,8 @@ const StakingAssets = () => {
 
   return (
     <div className="bg-[#F0F1F1] p-6 text-black">
+
+      {/* <pre>{JSON.stringify(stats.coinStakings, null, 2)}</pre> */}
       
       {/* Header */}
       <h2 className="text-xl font-semibold mb-4">Staking assets</h2>
@@ -229,7 +231,10 @@ const StakingAssets = () => {
       {/* Assets Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {/* Ethereum Card */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm">
+
+        {
+          stats.coinStakings.map(({coinName,totalStaked,totalStakedUSDT,totalProfit,totalProfitUSDT,numberOfStakes }) => (
+<div className="bg-white p-4 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="">
               <svg
@@ -272,120 +277,18 @@ const StakingAssets = () => {
                 />
               </svg>
             </div>
-            <span className="font-semibold">Ethereum (ETH)</span>
+            <span className="font-semibold">{coinName} ({coinName})</span>
           </div>
           <div>
             <span className="text-gray-500 text-sm">Staked</span>
-            <p className="text-xl font-semibold">324 ETH</p>
+            <p className="text-xl font-semibold">{totalStaked} {coinName}</p>
           </div>
         </div>
+          ))
+        }
+        
 
-        {/* Bitcoin Card */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="">
-              <svg
-                width="44"
-                height="44"
-                viewBox="0 0 44 44"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M42.3866 27.08C39.6484 38.3301 28.5239 45.1767 17.5391 42.3713C6.55892 39.5666 -0.12542 28.1713 2.61401 16.9221C5.35104 5.6708 16.4755 -1.17631 27.4569 1.62839C38.4409 4.43309 45.1249 15.8296 42.3863 27.0802L42.3865 27.08H42.3866Z"
-                  fill="#F7931A"
-                />
-                <path
-                  d="M31.9478 19.4522C32.3638 16.7202 30.2459 15.2517 27.3498 14.272L28.2894 10.5713L25.9955 10.01L25.0809 13.6133C24.4779 13.4656 23.8586 13.3264 23.2431 13.1884L24.1643 9.56133L21.8719 9L20.9319 12.6995C20.4329 12.5879 19.9427 12.4777 19.4672 12.3615L19.4699 12.3498L16.3066 11.5741L15.6964 13.9801C15.6964 13.9801 17.3982 14.3632 17.3624 14.3868C18.2913 14.6145 18.4592 15.2184 18.4313 15.697L17.3612 19.913C17.4251 19.929 17.5081 19.9521 17.5996 19.9882C17.5231 19.9695 17.4417 19.9491 17.3572 19.9293L15.8571 25.8353C15.7436 26.1124 15.4555 26.5284 14.806 26.3704C14.829 26.4031 13.1389 25.9618 13.1389 25.9618L12 28.5405L14.9851 29.2713C15.5404 29.4081 16.0846 29.5512 16.6205 29.6857L15.6713 33.4289L17.9625 33.9902L18.9025 30.2868C19.5284 30.4537 20.1358 30.6076 20.7305 30.7527L19.7937 34.4387L22.0876 35L23.0367 31.2639C26.9482 31.9909 29.8893 31.6977 31.1273 28.2232C32.1248 25.4258 31.0776 23.8122 29.0198 22.76C30.5186 22.4205 31.6476 21.4524 31.9486 19.4525L31.9479 19.452L31.9478 19.4522ZM26.7069 26.6697C25.998 29.4671 21.202 27.9549 19.6471 27.5757L20.9068 22.6166C22.4616 22.9978 27.4477 23.7522 26.707 26.6697H26.7069ZM27.4163 19.4117C26.7696 21.9562 22.7779 20.6635 21.483 20.3465L22.625 15.849C23.9199 16.1659 28.0899 16.7576 27.4165 19.4117H27.4163Z"
-                  fill="white"
-                />
-              </svg>
-            </div>
-            <span className="font-semibold">Bitcoin (BTC)</span>
-          </div>
-          <div>
-            <span className="text-gray-500 text-sm">Staked</span>
-            <p className="text-xl font-semibold">0.345 BTC</p>
-          </div>
-        </div>
-
-        {/* Tether Card */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="">
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  x="0.5"
-                  y="0.5"
-                  width="47"
-                  height="47"
-                  rx="23.5"
-                  fill="white"
-                />
-                <rect
-                  x="0.5"
-                  y="0.5"
-                  width="47"
-                  height="47"
-                  rx="23.5"
-                  stroke="#F1F1F1"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12.8127 11.3495L6.42616 24.7375C6.40186 24.7873 6.39415 24.8435 6.40418 24.898C6.41421 24.9525 6.44143 25.0023 6.48188 25.0402L23.7303 41.5352C23.7793 41.5821 23.8445 41.6083 23.9124 41.6083C23.9803 41.6083 24.0455 41.5821 24.0945 41.5352L41.3429 25.0413C41.3834 25.0033 41.4106 24.9535 41.4206 24.899C41.4306 24.8445 41.423 24.7883 41.3986 24.7385L35.0122 11.3506C34.9915 11.3056 34.9584 11.2675 34.9167 11.2409C34.875 11.2142 34.8264 11.2001 34.7769 11.2002H13.05C13.0002 11.1996 12.9513 11.2134 12.9092 11.2399C12.8671 11.2664 12.8336 11.3045 12.8127 11.3495Z"
-                  fill="#50AF95"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M26.1287 26.1123C26.0048 26.1216 25.365 26.1597 23.9379 26.1597C22.8028 26.1597 21.9969 26.1257 21.7141 26.1123C17.3275 25.9197 14.0532 25.1576 14.0532 24.2452C14.0532 23.3328 17.3275 22.5717 21.7141 22.376V25.3533C22.001 25.3739 22.8224 25.4223 23.9575 25.4223C25.3196 25.4223 26.0017 25.3657 26.1245 25.3543V22.3781C30.5019 22.5727 33.7689 23.3348 33.7689 24.2452C33.7689 25.1556 30.5029 25.9177 26.1245 26.1113L26.1287 26.1123ZM26.1287 22.0702V19.406H32.2376V15.3433H15.6052V19.406H21.7131V22.0691C16.7486 22.2967 13.0151 23.2782 13.0151 24.4543C13.0151 25.6303 16.7486 26.6107 21.7131 26.8394V35.3767H26.1276V26.8363C31.0808 26.6087 34.8081 25.6283 34.8081 24.4532C34.8081 23.2782 31.0839 22.2978 26.1276 22.0691L26.1287 22.0702Z"
-                  fill="white"
-                />
-              </svg>
-            </div>
-            <span className="font-semibold">Tether (USDT)</span>
-          </div>
-          <div>
-            <span className="text-gray-500 text-sm">Staked</span>
-            <p className="text-xl font-semibold">36,456.00 USDT</p>
-          </div>
-        </div>
-
-        {/* Dogecoin Card */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="">
-              <svg
-                width="47"
-                height="48"
-                viewBox="0 0 47 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M23.9036 16.1665H20.6143V22.644H25.7894V25.3561H20.6143V31.8331H24.0648C24.9514 31.8331 31.3434 31.9331 31.3335 24.2971C31.3236 16.6611 25.1339 16.1665 23.9036 16.1665Z"
-                  fill="#C2A633"
-                />
-                <path
-                  d="M23.5 0.5C10.5212 0.5 0 11.0212 0 24C0 36.9788 10.5212 47.5 23.5 47.5C36.4788 47.5 47 36.9788 47 24C47 11.0212 36.4788 0.5 23.5 0.5ZM24.4233 36.6923H15.9128V25.378H12.9128V22.6064H15.9126V11.2914H23.2168C24.9448 11.2914 36.39 10.9326 36.39 24.2042C36.39 37.6953 24.4235 36.6923 24.4235 36.6923H24.4233Z"
-                  fill="#C2A633"
-                />
-              </svg>
-            </div>
-            <span className="font-semibold ">Dogecoin</span>
-          </div>
-          <div>
-            <span className="text-gray-500 text-sm">Staked</span>
-            <p className="text-xl font-semibold">36,456.00 DOGE</p>
-          </div>
-        </div>
+         
       </div>
 
       {/* <pre>

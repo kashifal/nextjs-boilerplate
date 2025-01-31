@@ -8,6 +8,7 @@ import StackingBanner from "@/components/StackingBanner";
 import StackCards from "@/components/StackCards";
 import Marketing from "@/components/Marketing";
 import Footer from "@/components/Footer"; 
+import StakingHistory from "@/components/StakingHistory";
 import { useAuth } from "@/hooks/useAuth";
 const Stacking = () => {
     useAdminAuth(false)
@@ -81,7 +82,8 @@ const Stacking = () => {
       <StackingBanner />
 
       <StackCards />
-      <Marketing />
+      {/* <Marketing /> */}
+      <StakingHistory />
       <Footer />
       </div>
     </>
