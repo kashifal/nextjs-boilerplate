@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
-import Stake from '@/models/stake';
+import Stake from '@/models/staking';
 import { verifyJWT } from '@/lib/jwt';
 
 export async function POST(request) {
