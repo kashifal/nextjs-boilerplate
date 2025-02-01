@@ -1,7 +1,7 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const AddCoinModal = ({ onClose, isOpen }) => {
+const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
   const [formData, setFormData] = useState({
     name: '',
     walletAddress: '',
@@ -9,12 +9,40 @@ const AddCoinModal = ({ onClose, isOpen }) => {
     apy: 12.2,
     durations: [{ duration: '', percentage: '' }],
     qrcode: null,
+    logoUrl: null,
+    symbol: ''
   });
 
   const [imagePreview, setImagePreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [qrcodePreview, setQrcodePreview] = useState(null);
   const [qrcodeFile, setQrcodeFile] = useState(null);
+
+  useEffect(() => {
+    if (editingCoin) {
+      setFormData({
+        ...editingCoin,
+        id: editingCoin._id,
+        durations: editingCoin.durations || [{ duration: '', percentage: '' }],
+        symbol: editingCoin.symbol || ''
+      });
+      setImagePreview(editingCoin.logoUrl ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.logoUrl}` : null);
+      setQrcodePreview(editingCoin.qrcode ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.qrcode}` : null);
+    } else {
+      setFormData({
+        name: '',
+        walletAddress: '',
+        durationDays: 14,
+        apy: 12.2,
+        durations: [{ duration: '', percentage: '' }],
+        qrcode: null,
+        logoUrl: null,
+        symbol: ''
+      });
+      setImagePreview(null);
+      setQrcodePreview(null);
+    }
+  }, [editingCoin]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -79,34 +107,34 @@ const AddCoinModal = ({ onClose, isOpen }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const formDataToSend = new FormData();
+    formDataToSend.append('data', JSON.stringify(formData));
+    
+    if (logoFile) formDataToSend.append('logo', logoFile);
+    if (qrcodeFile) formDataToSend.append('qrcode', qrcodeFile);
 
-    const submitData = new FormData();
-    if (logoFile) {
-      submitData.append('logo', logoFile);
-    }
-    if (qrcodeFile) {
-      submitData.append('qrcode', qrcodeFile);
-    }
-    submitData.append('data', JSON.stringify(formData));
-
-    console.log(submitData)
-
+    const method = editingCoin ? 'PUT' : 'POST';
+    
     try {
-      // Replace with your API endpoint
       const response = await fetch('/api/coin', {
-        method: 'POST',
-        body: submitData,
+        method,
+        body: formDataToSend,
       });
 
       if (response.ok) {
         onClose();
-        // Add success notification here if needed
+      } else {
+        console.error('Failed to save coin');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      // Add error handling here
+      console.error('Error saving coin:', error);
     }
   };
+
+  // Update modal title based on whether we're editing or adding
+  const modalTitle = editingCoin ? 'Edit coin' : 'Add new coin';
+  const submitButtonText = editingCoin ? 'Update coin' : 'Create coin';
 
   if (!isOpen) return null;
 
@@ -119,9 +147,8 @@ const AddCoinModal = ({ onClose, isOpen }) => {
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <form onSubmit={handleSubmit} className="bg-white text-[black] rounded-2xl min-w-[480px] p-6 relative">
-        {/* Header with Close Button */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold">Add new coin</h2>
+          <h2 className="text-lg font-semibold">{modalTitle}</h2>
           <button
             className="text-gray-400 hover:text-gray-600 p-1"
             onClick={onClose}
@@ -144,7 +171,6 @@ const AddCoinModal = ({ onClose, isOpen }) => {
           </button>
         </div>
 
-        {/* Modified Coin Logo Upload Section */}
         <div className="mb-6 flex">
           <div>
             {imagePreview ? (
@@ -416,7 +442,6 @@ const AddCoinModal = ({ onClose, isOpen }) => {
           </div>
         </div>
 
-        {/* Add QR Code Upload Section after the logo upload */}
         <div className="mb-6 flex">
           <div>
             {qrcodePreview ? (
@@ -460,7 +485,6 @@ const AddCoinModal = ({ onClose, isOpen }) => {
           </div>
         </div>
 
-        {/* Modified Form Fields */}
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1.5">
@@ -472,6 +496,21 @@ const AddCoinModal = ({ onClose, isOpen }) => {
               value={formData.name}
               onChange={handleInputChange}
               placeholder="Enter name"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5">
+              Symbol
+            </label>
+            <input
+              type="text"
+              name="symbol"
+              value={formData.symbol}
+              onChange={handleInputChange}
+              placeholder="Enter symbol (e.g., BTC)"
               className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               required
             />
@@ -492,36 +531,6 @@ const AddCoinModal = ({ onClose, isOpen }) => {
             />
           </div>
 
-          {/* <div>
-            <label className="block text-sm font-medium mb-1.5">APY</label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center border rounded-lg">
-                <input
-                  type="number"
-                  name="durationDays"
-                  value={formData.durationDays}
-                  onChange={handleInputChange}
-                  className="w-[75%] px-2 py-2.5 text-sm border-gray-200 focus:outline-none"
-                  required
-                />
-                <span className="text-sm text-gray-500">days</span>
-              </div>
-              <div className="flex items-center border rounded-lg">
-                <input
-                  type="number"
-                  name="apy"
-                  value={formData.apy}
-                  onChange={handleInputChange}
-                  step="0.1"
-                  className="w-[85%] px-2 py-2.5 text-sm border-gray-200 focus:outline-none"
-                  required
-                />
-                <span className="text-sm text-gray-500">%</span>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Dynamic Duration Fields */}
           {formData.durations.map((duration, index) => (
             <div key={index} className="relative">
               <div className="grid grid-cols-2 gap-4">
@@ -577,12 +586,11 @@ const AddCoinModal = ({ onClose, isOpen }) => {
           </button>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full mt-6 py-3 bg-[#00FF29] text-black rounded-lg hover:bg-[#00E025] transition-colors text-sm font-medium"
         >
-          Create coin
+          {submitButtonText}
         </button>
       </form>
     </div>

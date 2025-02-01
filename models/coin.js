@@ -61,6 +61,7 @@ const coinSchema = new mongoose.Schema({
     default: true
   },
   symbol: {
+    
     type: String,
     required: true
   }

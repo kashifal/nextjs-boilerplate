@@ -3,6 +3,7 @@ import main from '/main.svg'
 import users from '/users.svg'
 import transactions from '/transactions.svg'
 import coins from '/coin.svg'
+import Link from "next/link";
 
 const SideBar = () => {
   const [activeLink, setActiveLink] = useState(null);
@@ -14,6 +15,7 @@ const SideBar = () => {
 </svg>
 `,
       label: "Main",
+      href: "/admin",
     },
     {
       svg: `<svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +23,7 @@ const SideBar = () => {
 </svg>
 `,
       label: "Users",
+      href: "/user",
     },
     {
       svg: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +31,7 @@ const SideBar = () => {
 </svg>
 `,
       label: "Transactions",
+      href: "/transactions",
     },
     {
       svg: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,6 +39,7 @@ const SideBar = () => {
 </svg>
 `,
       label: "Coins",
+      href: "/coins",
     },
   ];
 
@@ -59,8 +64,9 @@ const SideBar = () => {
 
 
         {links.map((link, index) => (
-          <div
+          <Link
             key={index}
+            href={link.href}
             onClick={() => handleLinkClick(index)}  // Handle link click to set active state
             className={`flex items-center gap-[20px] p-4 rounded-lg cursor-pointer
             ${activeLink === index ? 'bg-[#F8F8F8] text-black' : 'bg-white text-[#78859B]'} 
@@ -70,7 +76,7 @@ const SideBar = () => {
               dangerouslySetInnerHTML={{ __html: link.svg }}
             ></span>
             <span>{link.label}</span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

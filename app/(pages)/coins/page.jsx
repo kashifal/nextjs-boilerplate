@@ -9,17 +9,15 @@ import { Plus } from 'lucide-react';
 import AddCoinModal from './AddCoinModal';
 import { MoreVertical as EllipsisVertical, Edit as PencilSquare, Trash } from 'react-feather';
 
-const CoinCard = ({ coin, amount, symbol }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    useAdminAuth();
+const CoinCard = ({ coin, amount, symbol, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm">
-    <AddCoinModal onClose={() => setIsModalOpen(false)} isOpen={isModalOpen} />
+      {/* <pre>{JSON.stringify(coin, null, 2)}</pre> */}
       <div className="flex justify-between items-center mb-12">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 relative">
             <img
-              src={`${process.env.NEXT_PUBLIC_API_URL}/${coin.icon}`}
+              src={`${process.env.NEXT_PUBLIC_URL}/${coin.logoUrl}`}
               alt={coin.name}
               fill
               className="rounded-full"
@@ -32,17 +30,19 @@ const CoinCard = ({ coin, amount, symbol }) => {
             <EllipsisVertical size={24} className="text-gray-400" />
           </button>
           
-          {/* Dropdown Menu */}
-          <div className="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg p-2">
-            <button className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 rounded-lg">
+          <div className="hidden group-hover:block border border-gray-100 absolute right-0 mt-0 w-48 bg-white rounded-xl shadow-lg p-2">
+            <button 
+              onClick={() => onEdit(coin)} 
+              className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 rounded-lg"
+            >
               <PencilSquare size={20} className="text-green-500" />
               <span>Edit coin</span>
             </button>
-            <button className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 rounded-lg">
-              <PencilSquare size={20} className="text-gray-500" />
-              <span>Edit APY</span>
-            </button>
-            <button className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 rounded-lg text-red-500">
+            
+            <button 
+              onClick={() => onDelete(coin._id)}
+              className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 rounded-lg text-red-500"
+            >
               <Trash size={20} />
               <span>Delete</span>
             </button>
@@ -62,40 +62,63 @@ const CoinCard = ({ coin, amount, symbol }) => {
 
 const Coins = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCoin, setEditingCoin] = useState(null);
   const [coins, setCoins] = useState([]);
   
   useEffect(() => {
-    const fetchCoins = async () => {
-      try {
-        const response = await fetch('/api/coin');
-        const data = await response.json();
-        if (data.coins) {
-          const formattedCoins = data.coins.map(coin => ({
-            name: coin.name,
-            icon: coin.logoUrl || '/placeholder-coin.png',
-            amount: '0.00',
-            symbol: coin.name
-          }));
-          setCoins(formattedCoins);
-        }
-      } catch (error) {
-        console.error('Error fetching coins:', error);
-      }
-    };
-
     fetchCoins();
   }, []);
 
+  const fetchCoins = async () => {
+    try {
+      const response = await fetch('/api/coin');
+      const data = await response.json();
+      if (data.coins) {
+        setCoins(data.coins);
+      }
+    } catch (error) {
+      console.error('Error fetching coins:', error);
+    }
+  };
+
+  const handleDelete = async (coinId) => {
+    if (window.confirm('Are you sure you want to delete this coin?')) {
+      try {
+        const response = await fetch(`/api/coin?id=${coinId}`, {
+          method: 'DELETE',
+        });
+        
+        if (response.ok) {
+          fetchCoins(); // Refresh the list after deletion
+        } else {
+          console.error('Failed to delete coin');
+        }
+      } catch (error) {
+        console.error('Error deleting coin:', error);
+      }
+    }
+  };
+
+  const handleEdit = (coin) => {
+    setEditingCoin(coin);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = async () => {
+    setIsModalOpen(false);
+    setEditingCoin(null);
+    // Fetch updated coins list
+    await fetchCoins();
+  };
+
   return (
     <MainLayout>
-    
       <div className="flex bg-[#F8F8F8] min-h-screen px-6 py-12 flex-col gap-4">
         <div className="flex flex-col gap-6">
           <div className="text-2xl font-bold flex gap-6 items-center">
             Coins
             <button 
-            
-            onClick={()=>setIsModalOpen(true)}
+              onClick={() => setIsModalOpen(true)}
               className='bg-[#375DFB] flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-normal'
             >
               <Plus size={20} />
@@ -103,23 +126,28 @@ const Coins = () => {
             </button>
           </div>
           
-          <AddCoinModal onClose={() => setIsModalOpen(false)} isOpen={isModalOpen} />
+          <AddCoinModal 
+            onClose={handleCloseModal}
+            isOpen={isModalOpen}
+            editingCoin={editingCoin}
+          />
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coins.map((coin, index) => (
+            {coins.map((coin) => (
               <CoinCard
-                key={index}
+                key={coin._id}
                 coin={coin}
-                amount={coin.amount}
-                symbol={coin.symbol}
+                amount={coin.amount || '0.00'}
+                symbol={coin.symbol || coin.name}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
               />
             ))}
           </div>
-          
         </div>
       </div>
     </MainLayout>
-  )
-}
+  );
+};
 
-export default Coins
+export default Coins;

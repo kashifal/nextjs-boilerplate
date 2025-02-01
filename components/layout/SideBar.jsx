@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import '@/app/globals.css'
 import NextImage from 'next/image'
+import Link from "next/link";
 
 
 const SideBar = () => {
@@ -14,6 +15,7 @@ const SideBar = () => {
 </svg>
 `,
             label: "Main",
+            href: "/admin",
         },
         {
             svg: `<svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +23,7 @@ const SideBar = () => {
 </svg>
 `,
             label: "Users",
+            href: "/user",
         },
         {
             svg: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,6 +31,7 @@ const SideBar = () => {
 </svg>
 `,
             label: "Transactions",
+            href: "/transactions",
         },
         {
             svg: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +39,8 @@ const SideBar = () => {
 </svg>
 `,
             label: "Coins",
-        },
+            href: "/coins",
+            },
     ];
 
 
@@ -45,17 +50,18 @@ const SideBar = () => {
 
     return (
         <div className="w-[280px] fixed left-0 top-0 min-h-screen h-full border-r border-[#E9EAEC] bg-white py-6 px-6">
-            <a href="#" className="">
+            <Link href="/" className="">
                <NextImage src="/logo.svg" alt="logo" width={160} height={48} />
 
-            </a>
+            </Link>
             <div className="mt-20">
 
 
 
                 {links.map((link, index) => (
-                    <div
+                    <Link
                         key={index}
+                        href={link.href}
                         onClick={() => handleLinkClick(index)}  // Handle link click to set active state
                         className={`flex items-center gap-[20px] p-4 rounded-lg cursor-pointer
             ${activeLink === index ? 'bg-[#F8F8F8] text-black' : 'bg-white text-[#78859B]'} 
@@ -65,7 +71,7 @@ const SideBar = () => {
                             dangerouslySetInnerHTML={{ __html: link.svg }}
                         ></span>
                         <span>{link.label}</span>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
