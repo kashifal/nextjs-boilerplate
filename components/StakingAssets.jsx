@@ -315,7 +315,7 @@ const StakingAssets = ({stats}) => {
 
         {/* Table Rows */}
         <div className="divide-y">
-        <pre>{JSON.stringify(currentTopups, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(currentTopups, null, 2)}</pre> */}
           {/* Row 1 */}
           {currentTopups.map(({ coin, status, amount, user, _id, createdAt }) => (
             <div key={_id} className={`grid grid-cols-6 p-4 items-center ${hideInfo.includes(_id) ? 'opacity-30' : 'opacity-100'} transition-opacity duration-200`}>
