@@ -30,7 +30,7 @@ const StakingAssets = ({stats}) => {
     const response = await fetch('/api/coin');
     const data = await response.json();
     setCoins(data.coins);
-    console.log(data.coins);
+    console.log(data.coins, 'coins');
   };
   const fetchTopups = async () => {
     try {
@@ -315,9 +315,11 @@ const StakingAssets = ({stats}) => {
 
         {/* Table Rows */}
         <div className="divide-y">
+        <pre>{JSON.stringify(currentTopups, null, 2)}</pre>
           {/* Row 1 */}
           {currentTopups.map(({ coin, status, amount, user, _id, createdAt }) => (
             <div key={_id} className={`grid grid-cols-6 p-4 items-center ${hideInfo.includes(_id) ? 'opacity-30' : 'opacity-100'} transition-opacity duration-200`}>
+           
               <div className="col-span-1 flex items-center gap-2">
                 <svg
                   width="44"
