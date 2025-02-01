@@ -350,6 +350,7 @@ const StakingAssets = ({stats}) => {
                 </svg>
 
                     <div>
+                  
                       <p className="font-medium">{getUserById(user)}</p>
                       <p className="text-sm text-gray-500">{getDate(createdAt)}</p>
                     </div>

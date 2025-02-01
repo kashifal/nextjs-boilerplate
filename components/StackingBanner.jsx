@@ -615,7 +615,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <img
-                src={`${process.env.NEXT_PUBLIC_URL}/${coin?.logoUrl}`}
+                src={`${coin?.logoUrl}`}
                 alt={coin?.name}
                 className="w-6 h-6 rounded-full"
               />
@@ -633,7 +633,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base">Auto Staking</h3>
+              <h3 className="text-base text-black">Auto Staking</h3>
               <p className="text-sm text-gray-500 mt-1">
                 Enable Auto-Staking to automatically restake
                 expired products immediately.
@@ -758,7 +758,7 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
                 }`}
               >
                 <img
-                  src={`${process.env.NEXT_PUBLIC_URL}/${coin.logoUrl}`}
+                  src={`${coin.logoUrl}`}
                   alt={coin.name}
                   className="rounded-full h-8 w-8"
                 />

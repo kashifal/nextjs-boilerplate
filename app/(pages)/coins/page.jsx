@@ -64,13 +64,11 @@ const Coins = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoin, setEditingCoin] = useState(null);
   const [coins, setCoins] = useState([]);
-  
-  useEffect(() => {
-    fetchCoins();
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchCoins = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/coin');
       const data = await response.json();
       if (data.coins) {
@@ -78,8 +76,14 @@ const Coins = () => {
       }
     } catch (error) {
       console.error('Error fetching coins:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCoins();
+  }, []);
 
   const handleDelete = async (coinId) => {
     if (window.confirm('Are you sure you want to delete this coin?')) {
@@ -104,33 +108,40 @@ const Coins = () => {
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = async () => {
+  const handleCloseModal = async (shouldRefresh = false) => {
     setIsModalOpen(false);
     setEditingCoin(null);
-    // Fetch updated coins list
-    await fetchCoins();
+    
+    if (shouldRefresh) {
+      await fetchCoins(); // Refresh the coins list
+    }
   };
 
   return (
     <MainLayout>
       <div className="flex bg-[#F8F8F8] min-h-screen px-6 py-12 flex-col gap-4">
         <div className="flex flex-col gap-6">
-          <div className="text-2xl font-bold flex gap-6 items-center">
-            Coins
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className='bg-[#375DFB] flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-normal'
-            >
-              <Plus size={20} />
-              <span>Add new coin</span>
-            </button>
+          <div className="text-2xl font-bold flex gap-6 items-center justify-between">
+            <div className="flex items-center gap-6">
+              Coins
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className='bg-[#375DFB] flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-normal'
+              >
+                <Plus size={20} />
+                <span>Add new coin</span>
+              </button>
+            </div>
+            {isLoading && <span className="text-sm text-gray-500">Refreshing...</span>}
           </div>
           
-          <AddCoinModal 
-            onClose={handleCloseModal}
-            isOpen={isModalOpen}
-            editingCoin={editingCoin}
-          />
+          {isModalOpen && (
+            <AddCoinModal 
+              onClose={handleCloseModal}
+              isOpen={isModalOpen}
+              editingCoin={editingCoin}
+            />
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {coins.map((coin) => (
