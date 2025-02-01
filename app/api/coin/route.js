@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { existsSync } from 'fs';
 
 import connectDB from '@/lib/db';
 import Coin from '@/models/coin';
@@ -21,12 +22,16 @@ export async function POST(request) {
     
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'public/uploads');
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
+    }
     
     // Handle logo upload
     if (logo && logo instanceof File) {
       try {
-        await writeFile(`${uploadsDir}/${logo.name}`, Buffer.from(await logo.arrayBuffer()));
-        logoUrl = `/uploads/${logo.name}`;
+        const logoFileName = `${Date.now()}-${logo.name}`;
+        await writeFile(`${uploadsDir}/${logoFileName}`, Buffer.from(await logo.arrayBuffer()));
+        logoUrl = `/uploads/${logoFileName}`;
       } catch (error) {
         console.error('Error saving logo:', error);
         return NextResponse.json(
@@ -39,8 +44,9 @@ export async function POST(request) {
     // Handle QR code upload
     if (qrcode && qrcode instanceof File) {
       try {
-        await writeFile(`${uploadsDir}/${qrcode.name}`, Buffer.from(await qrcode.arrayBuffer()));
-        qrcodeUrl = `/uploads/${qrcode.name}`;
+        const qrFileName = `${Date.now()}-${qrcode.name}`;
+        await writeFile(`${uploadsDir}/${qrFileName}`, Buffer.from(await qrcode.arrayBuffer()));
+        qrcodeUrl = `/uploads/${qrFileName}`;
       } catch (error) {
         console.error('Error saving QR code:', error);
         return NextResponse.json(
@@ -161,21 +167,27 @@ export async function PUT(request) {
     const data = JSON.parse(formData.get('data'));
     const id = data.id;
 
-    let logoUrl = data.logoUrl; // Keep existing logo if no new one
-    let qrcodeUrl = data.qrcode; // Keep existing QR if no new one
+    let logoUrl = data.logoUrl;
+    let qrcodeUrl = data.qrcode;
     
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'public/uploads');
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
+    }
+
     // Handle new logo upload if provided
     if (logo && logo instanceof File) {
-      const uploadsDir = path.join(process.cwd(), 'public/uploads');
-      await writeFile(`${uploadsDir}/${logo.name}`, Buffer.from(await logo.arrayBuffer()));
-      logoUrl = `/uploads/${logo.name}`;
+      const logoFileName = `${Date.now()}-${logo.name}`;
+      await writeFile(`${uploadsDir}/${logoFileName}`, Buffer.from(await logo.arrayBuffer()));
+      logoUrl = `/uploads/${logoFileName}`;
     }
 
     // Handle new QR code upload if provided
     if (qrcode && qrcode instanceof File) {
-      const uploadsDir = path.join(process.cwd(), 'public/uploads');
-      await writeFile(`${uploadsDir}/${qrcode.name}`, Buffer.from(await qrcode.arrayBuffer()));
-      qrcodeUrl = `/uploads/${qrcode.name}`;
+      const qrFileName = `${Date.now()}-${qrcode.name}`;
+      await writeFile(`${uploadsDir}/${qrFileName}`, Buffer.from(await qrcode.arrayBuffer()));
+      qrcodeUrl = `/uploads/${qrFileName}`;
     }
 
     const updatedCoin = await Coin.findByIdAndUpdate(
