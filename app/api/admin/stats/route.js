@@ -42,7 +42,7 @@ export async function GET() {
               url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
               headers: {
                 'Accept': 'text/plain',
-                'X-CoinAPI-Key': process.env.COINAPI_KEY
+                'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
               },
               timeout: 5000
             });
