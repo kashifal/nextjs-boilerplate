@@ -23,22 +23,39 @@ export async function GET() {
     const stakingsByCoin = {};
 
     // Process each staking
+    let apiErrorCount = 0;
+    const processedCoins = new Map(); // Cache exchange rates
+
     for (const staking of stakings) {
       try {
         const coinName = staking.coin.name;
         const coinSymbol = staking.coin.symbol;
         
-        // Get USDT rate for the coin
-        const response = await axios({
-          method: 'get',
-          url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
-          headers: {
-            'Accept': 'text/plain',
-            'X-CoinAPI-Key': process.env.COINAPI_KEY
+        let usdtRate;
+        // Check if we already fetched this coin's rate
+        if (processedCoins.has(coinName)) {
+          usdtRate = processedCoins.get(coinName);
+        } else {
+          try {
+            const response = await axios({
+              method: 'get',
+              url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
+              headers: {
+                'Accept': 'text/plain',
+                'X-CoinAPI-Key': process.env.COINAPI_KEY
+              },
+              timeout: 5000
+            });
+            usdtRate = response.data.rate;
+            processedCoins.set(coinName, usdtRate);
+          } catch (apiError) {
+            apiErrorCount++;
+            console.error(`Failed to fetch rate for ${coinName}:`, apiError.message);
+            usdtRate = 1; // Default fallback
+            processedCoins.set(coinName, usdtRate);
           }
-        });
+        }
 
-        const usdtRate = response.data.rate;
         const stakedUSDT = staking.amount * usdtRate;
         const totalProfit = (staking.dailyProfits || []).reduce((sum, dp) => sum + dp.profit, 0);
         const profitUSDT = totalProfit * usdtRate;
@@ -123,7 +140,14 @@ export async function GET() {
       totalStakedUSDT,
       totalProfitUSDT,
       userStakings,
-      coinStakings
+      coinStakings,
+      apiStatus: {
+        success: apiErrorCount === 0,
+        errorCount: apiErrorCount,
+        message: apiErrorCount > 0 
+          ? `Failed to fetch rates for ${apiErrorCount} coins. Some values may be inaccurate.` 
+          : 'All rates fetched successfully'
+      }
     });
 
   } catch (error) {
