@@ -20,62 +20,31 @@ export async function POST(request) {
     let logoUrl = null;
     let qrcodeUrl = null;
     
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    console.log('Uploads directory path:', uploadsDir);
-
-    try {
-      if (!existsSync(uploadsDir)) {
-        console.log('Creating uploads directory...');
-        await mkdir(uploadsDir, { recursive: true });
-      }
-    } catch (dirError) {
-      console.error('Error creating directory:', dirError);
-      return NextResponse.json(
-        { error: 'Failed to create uploads directory' },
-        { status: 500 }
-      );
-    }
-    
-    // Handle logo upload
+    // Convert logo file to base64
     if (logo && logo instanceof File) {
       try {
-        console.log('Processing logo file:', logo.name);
-        const logoFileName = `${Date.now()}-${logo.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const logoPath = path.join(uploadsDir, logoFileName);
-        console.log('Saving logo to:', logoPath);
-        
-        const buffer = Buffer.from(await logo.arrayBuffer());
-        await writeFile(logoPath, buffer);
-        console.log('Logo saved successfully');
-        
-        logoUrl = `/uploads/${logoFileName}`;
+        const logoBuffer = await logo.arrayBuffer();
+        const base64Logo = Buffer.from(logoBuffer).toString('base64');
+        logoUrl = `data:${logo.type};base64,${base64Logo}`;
       } catch (logoError) {
-        console.error('Detailed logo save error:', logoError);
+        console.error('Error processing logo:', logoError);
         return NextResponse.json(
-          { error: `Failed to save logo image: ${logoError.message}` },
+          { error: `Failed to process logo image: ${logoError.message}` },
           { status: 500 }
         );
       }
     }
 
-    // Handle QR code upload
+    // Convert QR code file to base64
     if (qrcode && qrcode instanceof File) {
       try {
-        console.log('Processing QR code file:', qrcode.name);
-        const qrFileName = `${Date.now()}-${qrcode.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const qrPath = path.join(uploadsDir, qrFileName);
-        console.log('Saving QR code to:', qrPath);
-        
-        const buffer = Buffer.from(await qrcode.arrayBuffer());
-        await writeFile(qrPath, buffer);
-        console.log('QR code saved successfully');
-        
-        qrcodeUrl = `/uploads/${qrFileName}`;
+        const qrcodeBuffer = await qrcode.arrayBuffer();
+        const base64Qrcode = Buffer.from(qrcodeBuffer).toString('base64');
+        qrcodeUrl = `data:${qrcode.type};base64,${base64Qrcode}`;
       } catch (qrError) {
-        console.error('Detailed QR code save error:', qrError);
+        console.error('Error processing QR code:', qrError);
         return NextResponse.json(
-          { error: `Failed to save QR code image: ${qrError.message}` },
+          { error: `Failed to process QR code image: ${qrError.message}` },
           { status: 500 }
         );
       }
@@ -208,50 +177,31 @@ export async function PUT(request) {
     let logoUrl = data.logoUrl;
     let qrcodeUrl = data.qrcode;
     
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    console.log('Uploads directory path:', uploadsDir);
-
-    try {
-      if (!existsSync(uploadsDir)) {
-        console.log('Creating uploads directory...');
-        await mkdir(uploadsDir, { recursive: true });
-      }
-    } catch (dirError) {
-      console.error('Error creating directory:', dirError);
-      return NextResponse.json(
-        { error: 'Failed to create uploads directory' },
-        { status: 500 }
-      );
-    }
-
-    // Handle new logo upload if provided
+    // Convert new logo file to base64 if provided
     if (logo && logo instanceof File) {
       try {
-        const logoFileName = `${Date.now()}-${logo.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const logoPath = path.join(uploadsDir, logoFileName);
-        await writeFile(logoPath, Buffer.from(await logo.arrayBuffer()));
-        logoUrl = `/uploads/${logoFileName}`;
+        const logoBuffer = await logo.arrayBuffer();
+        const base64Logo = Buffer.from(logoBuffer).toString('base64');
+        logoUrl = `data:${logo.type};base64,${base64Logo}`;
       } catch (logoError) {
-        console.error('Error saving logo:', logoError);
+        console.error('Error processing logo:', logoError);
         return NextResponse.json(
-          { error: `Failed to save logo image: ${logoError.message}` },
+          { error: `Failed to process logo image: ${logoError.message}` },
           { status: 500 }
         );
       }
     }
 
-    // Handle new QR code upload if provided
+    // Convert new QR code file to base64 if provided
     if (qrcode && qrcode instanceof File) {
       try {
-        const qrFileName = `${Date.now()}-${qrcode.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const qrPath = path.join(uploadsDir, qrFileName);
-        await writeFile(qrPath, Buffer.from(await qrcode.arrayBuffer()));
-        qrcodeUrl = `/uploads/${qrFileName}`;
+        const qrcodeBuffer = await qrcode.arrayBuffer();
+        const base64Qrcode = Buffer.from(qrcodeBuffer).toString('base64');
+        qrcodeUrl = `data:${qrcode.type};base64,${base64Qrcode}`;
       } catch (qrError) {
-        console.error('Error saving QR code:', qrError);
+        console.error('Error processing QR code:', qrError);
         return NextResponse.json(
-          { error: `Failed to save QR code image: ${qrError.message}` },
+          { error: `Failed to process QR code image: ${qrError.message}` },
           { status: 500 }
         );
       }
