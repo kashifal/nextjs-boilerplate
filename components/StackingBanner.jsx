@@ -337,7 +337,7 @@ const StackingBanner = () => {
             url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
             headers: {
               'Accept': 'text/plain',
-              'X-CoinAPI-Key': '851bcfff-e359-4539-80a1-3f8018923806'
+              'X-CoinAPI-Key': process.env.COINAPI_KEY
             }
           });
 
@@ -615,7 +615,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <img
-                src={`http://localhost:3000/${coin?.logoUrl}`}
+                src={`${process.env.NEXTAUTH_URL}/${coin?.logoUrl}`}
                 alt={coin?.name}
                 className="w-6 h-6 rounded-full"
               />
@@ -758,7 +758,7 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
                 }`}
               >
                 <img
-                  src={`http://localhost:3000/${coin.logoUrl}`}
+                  src={`${process.env.NEXTAUTH_URL}/${coin.logoUrl}`}
                   alt={coin.name}
                   className="rounded-full h-8 w-8"
                 />

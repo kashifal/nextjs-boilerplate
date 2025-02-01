@@ -257,8 +257,7 @@ const TopUp = ({drawer , setdrawer}) => {
               }`}
             >
              <img
-              src={'http://localhost:3000/'+icon}
-               
+              src={`${process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || ''}/${icon}`}
               fill
               className="rounded-full h-8 w-8"
             />
@@ -357,7 +356,7 @@ const TopUp = ({drawer , setdrawer}) => {
             {selectedCoin !== null && (
               <>
                 <img 
-                  src={'http://localhost:3000/' + coins[selectedCoin]?.icon} 
+                  src={`${process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || ''}/${coins[selectedCoin]?.icon}`} 
                   alt={coins[selectedCoin]?.name}
                   className="w-8 h-8 rounded-full"
                 />
@@ -372,7 +371,7 @@ const TopUp = ({drawer , setdrawer}) => {
               {/* Replace with actual QR code */}
               <div className=" bg-white">
                 {/* Add your QR code here */}
-                <img src={`http://localhost:3000/${coins[selectedCoin]?.qrcode}`} alt="" />
+                <img src={`${process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || ''}/${coins[selectedCoin]?.qrcode}`} alt="" />
               </div>
             </div>
             
