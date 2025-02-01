@@ -34,7 +34,7 @@ export async function GET() {
           url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
           headers: {
             'Accept': 'text/plain',
-            'X-CoinAPI-Key': 'dacbfd0e-b96f-4b95-9e52-1a18439ceff0'
+            'X-CoinAPI-Key': '851bcfff-e359-4539-80a1-3f8018923806'
           }
         });
 
