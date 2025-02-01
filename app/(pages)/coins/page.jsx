@@ -12,7 +12,7 @@ import { MoreVertical as EllipsisVertical, Edit as PencilSquare, Trash } from 'r
 const CoinCard = ({ coin, amount, symbol, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm">
-      <pre>{JSON.stringify(coin, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(coin, null, 2)}</pre> */}
       <div className="flex justify-between items-center mb-12">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 relative">
