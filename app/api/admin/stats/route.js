@@ -31,6 +31,7 @@ export async function GET() {
       try {
         const coinName = staking.coin.name;
         const coinSymbol = staking.coin.symbol;
+        const coinLogoUrl = staking.coin.logoUrl;
         
         let usdtRate;
         // Check if we already fetched this coin's rate
@@ -69,6 +70,7 @@ export async function GET() {
           stakingsByCoin[coinName] = {
             coinName,
             symbol: coinSymbol,
+            logoUrl: coinLogoUrl,
             totalStaked: 0,
             totalStakedUSDT: 0,
             totalProfit: 0,
@@ -101,7 +103,8 @@ export async function GET() {
             symbol: coinSymbol,
             totalStaked: 0,
             totalStakedUSDT: 0,
-            numberOfStakes: 0
+            numberOfStakes: 0,
+            logoUrl: coinLogoUrl
           };
         }
 

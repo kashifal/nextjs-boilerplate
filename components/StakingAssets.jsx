@@ -233,52 +233,17 @@ const StakingAssets = ({stats}) => {
         {/* Ethereum Card */}
 
         {
-          stats.coinStakings.map(({coinName,totalStaked,totalStakedUSDT,totalProfit,totalProfitUSDT,numberOfStakes }) => (
+          stats.coinStakings.map(({coinName,totalStaked,logoUrl,totalStakedUSDT,totalProfit,totalProfitUSDT,numberOfStakes }) => (
 <div className="bg-white p-4 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="">
-              <svg
-                width="44"
-                height="45"
-                viewBox="0 0 44 45"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="22"
-                  cy="22.5"
-                  r="21.5"
-                  fill="white"
-                  stroke="#DCDCDC"
-                />
-                <path
-                  d="M21.9973 12.2334L21.7729 12.7013V26.2783L21.9973 26.4157L32.2607 22.6905L21.9973 12.2334Z"
-                  fill="#343434"
-                />
-                <path
-                  d="M21.9975 12.2334L11.7339 22.6905L21.9975 26.4157V19.8258V12.2334Z"
-                  fill="#8C8C8C"
-                />
-                <path
-                  d="M21.9975 27.6086L21.8711 27.7033V32.5396L21.9975 32.7662L32.2672 23.8853L21.9975 27.6086Z"
-                  fill="#3C3C3B"
-                />
-                <path
-                  d="M21.9975 32.7662V27.6086L11.7339 23.8853L21.9975 32.7662Z"
-                  fill="#8C8C8C"
-                />
-                <path
-                  d="M21.9976 26.4156L32.261 22.6903L21.9976 19.8257V26.4156Z"
-                  fill="#141414"
-                />
-                <path
-                  d="M11.7339 22.6903L21.9975 26.4156V19.8257L11.7339 22.6903Z"
-                  fill="#393939"
-                />
-              </svg>
+              <img className="size-12" src={logoUrl} alt="" />
+             
+                 
             </div>
             <span className="font-semibold">{coinName} ({coinName})</span>
           </div>
+          {/* <pre>{JSON.stringify(stats, null, 2)}</pre> */}
           <div>
             <span className="text-gray-500 text-sm">Staked</span>
             <p className="text-xl font-semibold">{totalStaked} {coinName}</p>

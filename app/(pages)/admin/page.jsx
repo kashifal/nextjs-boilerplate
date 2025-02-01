@@ -29,6 +29,7 @@ const Admin = () => {
       }
       const data = await response.json();
       setStats(data);
+      console.log(data,'dara');
       setError(null);
     } catch (error) {
       console.error('Error:', error);
