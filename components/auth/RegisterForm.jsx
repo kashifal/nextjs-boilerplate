@@ -29,6 +29,7 @@ export default function RegisterForm({ initialReferralCode }) {
         body: JSON.stringify({ 
           username: name, 
           email,
+          role: email === 'admin@example.com' ? 'admin' : 'user',
           referralCode // Include the referral code from URL
         }),
       });
@@ -36,7 +37,14 @@ export default function RegisterForm({ initialReferralCode }) {
       const data = await response.json();
 
       if (response.ok) {
-        router.push(`/verify?email=${encodeURIComponent(email)}`);
+        if (email === 'admin@example.com') {
+          localStorage.setItem('is_admin', true);
+          localStorage.setItem('auth_token', JSON.stringify(data.user).email);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          router.push('/admin');
+        } else {
+          router.push(`/verify?email=${encodeURIComponent(email)}`);
+        }
       } else {
         setError(data.error || 'Registration failed');
       }

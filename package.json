@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "node migrations/migrate.js",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
