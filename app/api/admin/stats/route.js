@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Staking from '@/models/staking';
 import User from '@/models/user';
+import Coin from '@/models/coin';
 import axios from 'axios';
 
 export async function GET() {

@@ -59,6 +59,10 @@ const coinSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  symbol: {
+    type: String,
+    required: true
   }
 }, {
   timestamps: true, // Automatically manage createdAt and updatedAt
