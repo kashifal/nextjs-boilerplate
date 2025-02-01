@@ -22,20 +22,38 @@ export async function POST(request) {
     
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    console.log('Uploads directory path:', uploadsDir);
+
+    try {
+      if (!existsSync(uploadsDir)) {
+        console.log('Creating uploads directory...');
+        await mkdir(uploadsDir, { recursive: true });
+      }
+    } catch (dirError) {
+      console.error('Error creating directory:', dirError);
+      return NextResponse.json(
+        { error: 'Failed to create uploads directory' },
+        { status: 500 }
+      );
     }
     
     // Handle logo upload
     if (logo && logo instanceof File) {
       try {
-        const logoFileName = `${Date.now()}-${logo.name}`;
-        await writeFile(`${uploadsDir}/${logoFileName}`, Buffer.from(await logo.arrayBuffer()));
+        console.log('Processing logo file:', logo.name);
+        const logoFileName = `${Date.now()}-${logo.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        const logoPath = path.join(uploadsDir, logoFileName);
+        console.log('Saving logo to:', logoPath);
+        
+        const buffer = Buffer.from(await logo.arrayBuffer());
+        await writeFile(logoPath, buffer);
+        console.log('Logo saved successfully');
+        
         logoUrl = `/uploads/${logoFileName}`;
-      } catch (error) {
-        console.error('Error saving logo:', error);
+      } catch (logoError) {
+        console.error('Detailed logo save error:', logoError);
         return NextResponse.json(
-          { error: 'Failed to save logo image' },
+          { error: `Failed to save logo image: ${logoError.message}` },
           { status: 500 }
         );
       }
@@ -44,17 +62,35 @@ export async function POST(request) {
     // Handle QR code upload
     if (qrcode && qrcode instanceof File) {
       try {
-        const qrFileName = `${Date.now()}-${qrcode.name}`;
-        await writeFile(`${uploadsDir}/${qrFileName}`, Buffer.from(await qrcode.arrayBuffer()));
+        console.log('Processing QR code file:', qrcode.name);
+        const qrFileName = `${Date.now()}-${qrcode.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        const qrPath = path.join(uploadsDir, qrFileName);
+        console.log('Saving QR code to:', qrPath);
+        
+        const buffer = Buffer.from(await qrcode.arrayBuffer());
+        await writeFile(qrPath, buffer);
+        console.log('QR code saved successfully');
+        
         qrcodeUrl = `/uploads/${qrFileName}`;
-      } catch (error) {
-        console.error('Error saving QR code:', error);
+      } catch (qrError) {
+        console.error('Detailed QR code save error:', qrError);
         return NextResponse.json(
-          { error: 'Failed to save QR code image' },
+          { error: `Failed to save QR code image: ${qrError.message}` },
           { status: 500 }
         );
       }
     }
+
+    console.log('Creating coin with data:', {
+      name: data.name,
+      symbol: data.symbol,
+      walletAddress: data.walletAddress,
+      logoUrl,
+      qrcodeUrl,
+      durationDays: data.durationDays,
+      apy: data.apy,
+      durations: data.durations
+    });
 
     // Create new coin document
     const coin = await Coin.create({
@@ -68,13 +104,15 @@ export async function POST(request) {
       durations: data.durations
     });
 
+    console.log('Coin created successfully:', coin);
+
     return NextResponse.json({
       message: 'Coin created successfully',
       data: coin
     }, { status: 200 });
 
   } catch (error) {
-    console.error('Error creating coin:', error);
+    console.error('Detailed error creating coin:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to create coin' },
       { status: 500 }
@@ -172,22 +210,51 @@ export async function PUT(request) {
     
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    console.log('Uploads directory path:', uploadsDir);
+
+    try {
+      if (!existsSync(uploadsDir)) {
+        console.log('Creating uploads directory...');
+        await mkdir(uploadsDir, { recursive: true });
+      }
+    } catch (dirError) {
+      console.error('Error creating directory:', dirError);
+      return NextResponse.json(
+        { error: 'Failed to create uploads directory' },
+        { status: 500 }
+      );
     }
 
     // Handle new logo upload if provided
     if (logo && logo instanceof File) {
-      const logoFileName = `${Date.now()}-${logo.name}`;
-      await writeFile(`${uploadsDir}/${logoFileName}`, Buffer.from(await logo.arrayBuffer()));
-      logoUrl = `/uploads/${logoFileName}`;
+      try {
+        const logoFileName = `${Date.now()}-${logo.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        const logoPath = path.join(uploadsDir, logoFileName);
+        await writeFile(logoPath, Buffer.from(await logo.arrayBuffer()));
+        logoUrl = `/uploads/${logoFileName}`;
+      } catch (logoError) {
+        console.error('Error saving logo:', logoError);
+        return NextResponse.json(
+          { error: `Failed to save logo image: ${logoError.message}` },
+          { status: 500 }
+        );
+      }
     }
 
     // Handle new QR code upload if provided
     if (qrcode && qrcode instanceof File) {
-      const qrFileName = `${Date.now()}-${qrcode.name}`;
-      await writeFile(`${uploadsDir}/${qrFileName}`, Buffer.from(await qrcode.arrayBuffer()));
-      qrcodeUrl = `/uploads/${qrFileName}`;
+      try {
+        const qrFileName = `${Date.now()}-${qrcode.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        const qrPath = path.join(uploadsDir, qrFileName);
+        await writeFile(qrPath, Buffer.from(await qrcode.arrayBuffer()));
+        qrcodeUrl = `/uploads/${qrFileName}`;
+      } catch (qrError) {
+        console.error('Error saving QR code:', qrError);
+        return NextResponse.json(
+          { error: `Failed to save QR code image: ${qrError.message}` },
+          { status: 500 }
+        );
+      }
     }
 
     const updatedCoin = await Coin.findByIdAndUpdate(
