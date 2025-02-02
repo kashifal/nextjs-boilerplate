@@ -70,6 +70,26 @@ function ReferralsPageContent() {
     return (
       <div className='bg-[#10141B] min-h-screen'>
         <OtherNavbar />
+        <div className="bg-[#1D2431] rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-white mb-4">Your Referral Link</h2>
+          <div className="flex gap-4 items-center mb-6">
+            <input 
+              type="text"
+              value={`${typeof window !== 'undefined' ? window.location.origin : ''}/register?ref=${referralData.referralCode}`}
+              className="flex-1 bg-[#2D3541] p-3 rounded-lg text-white"
+              readOnly
+            />
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/register?ref=${referralData.referralCode}`);
+              }}
+              className="bg-[#48FF2C] text-black px-4 py-2 rounded-lg hover:bg-[#3be025] transition-colors"
+            >
+              Copy
+            </button>
+          </div>
+          <p className="text-gray-400 text-sm">Share this link with your friends to earn rewards!</p>
+        </div>
         <div className="text-red-500 p-4 text-center">Error: {error}</div>
         <Footer />
       </div>
@@ -80,7 +100,7 @@ function ReferralsPageContent() {
     <div className='bg-[#10141B] min-h-screen'>
       <OtherNavbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-[#1D2431] rounded-lg p-6 mb-8">
+      <div className="bg-[#1D2431] rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-bold text-white mb-4">Your Referral Link</h2>
           <div className="flex gap-4 items-center mb-6">
             <input 
