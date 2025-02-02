@@ -80,7 +80,7 @@ export async function POST(request) {
     });
 
     if (referral) {
-      const rewardAmount = amount * 0.10; // 10% reward
+      const rewardAmount = amount * 0; // 10% reward
       await Referral.updateOne(
         { _id: referral._id },
         { 

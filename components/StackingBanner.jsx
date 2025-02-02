@@ -5,6 +5,7 @@ import Stake from "@/components/Stake";
 import WithDrawCoin from "@/components/Conwithdraw";
 import WithdrawTo from "@/components/withdraw";
 import StakingHistory from "@/components/StakingHistory";
+import toast from "react-hot-toast";
 
 import Image from "next/image";
 import { useEffect } from "react";
@@ -483,20 +484,11 @@ const StackingBanner = () => {
 
 
 const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => {
-  const [selectedDuration, setSelectedDuration] = useState(60);
+  const [selectedDuration, setSelectedDuration] = useState(coin.durations[0]?.duration || 60);
   const [lockedAmount, setLockedAmount] = useState("");
   const [autoStaking, setAutoStaking] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const durationOptions = [
-    { days: 14, apr: "6.18" },
-    { days: 30, apr: "11.23" },
-    { days: 60, apr: "16.01" },
-    { days: 90, apr: "19.25" },
-    { days: 120, apr: "21.56" },
-    { days: 160, apr: "24.87" },
-  ];
 
   // Calculate dates
   const startDate = new Date().toLocaleDateString("en-GB");
@@ -504,17 +496,15 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
     Date.now() + selectedDuration * 24 * 60 * 60 * 1000
   ).toLocaleDateString("en-GB");
 
-  // Get selected APR
-  const selectedAPR = durationOptions.find(
-    (opt) => opt.days === selectedDuration
-  )?.apr;
+  // Get selected APY from coin.durations
+  const selectedAPY = coin.durations.find(
+    (opt) => opt.duration === selectedDuration
+  )?.percentage || 0;
 
-  const [updatedCoinRate, setUpdatedCoinRate] = useState(coin);
   const handleConfirm = async () => {
     try {
       setIsSubmitting(true);
 
-      // Format dates as ISO strings
       const startDateObj = new Date();
       const endDateObj = new Date(startDateObj.getTime() + selectedDuration * 24 * 60 * 60 * 1000);
 
@@ -526,7 +516,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
         },
         stakingDetails: {
           duration: parseInt(selectedDuration),
-          apy: parseFloat(selectedAPR),
+          apy: selectedAPY,
           lockedAmount: parseFloat(lockedAmount),
           autoStakingEnabled: autoStaking,
           startDate: startDateObj.toISOString(),
@@ -547,8 +537,8 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
       }
 
       // Refresh topups and close modal
-      await fetchTopups();
-      onClose();
+      
+      // onClose();
       toast.success('Staking created successfully');
 
     } catch (error) {
@@ -573,21 +563,22 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             </svg>
           </button>
         </div>
-
+{/* <pre className="text-sm text-gray-800">{JSON.stringify(coin, null, 2)}</pre> */}
         <div className="mb-6">
           <h3 className="text-base text-black mb-4">Duration</h3>
           <div className="grid grid-cols-3 gap-3">
-            {durationOptions.map((option) => (
+            {coin.durations.map(({duration, percentage}, index) => (
               <button
-                key={option.days}
-                onClick={() => setSelectedDuration(option.days)}
-                className={`p-3 rounded-lg border text-center ${selectedDuration === option.days
+                key={`${duration}-${index}`}
+                onClick={() => setSelectedDuration(duration)}
+                className={`p-3 rounded-lg border text-center ${selectedDuration === duration
                   ? "border-green-500 bg-green-50"
                   : "border-gray-200"
                   }`}
               >
-                <div className="font-medium text-black">{option.days} Days</div>
-                <div className="text-sm text-gray-500">{option.apr}% APY</div>
+                
+                <div className="font-medium text-black">{duration} Days</div>
+                <div className="text-sm text-gray-500">{percentage}% APY</div>
               </button>
             ))}
           </div>
@@ -664,7 +655,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Estimated APY:</span>
-              <span className="text-orange-500">{selectedAPR}%</span>
+              <span className="text-orange-500">{selectedAPY}%</span>
             </div>
           </div>
         </div>
@@ -798,7 +789,7 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
 
         <button
           onClick={handleContinue}
-          className="w-full rounded-lg bg-[#48FF2C] py-2 font-medium text-black hover:bg-green-600 disabled:opacity-50"
+          className="w-full rounded-lg bg-[#48FF2C] py-2 font-medium text-black hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={selectedCoin === null}
         >
           Continue

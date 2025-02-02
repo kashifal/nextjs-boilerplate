@@ -17,7 +17,7 @@ export async function PUT(request) {
     }
 
     // Calculate reward (5% of stake amount)
-    const reward = (stakeAmount * 0.05);
+    const reward = (stakeAmount * 0);
 
     // Update referral status and amounts
     const updatedReferral = await Referral.findByIdAndUpdate(

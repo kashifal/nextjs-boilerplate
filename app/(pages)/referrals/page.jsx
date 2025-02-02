@@ -17,6 +17,9 @@ export default function ReferralsPage() {
   );
 }
 
+
+
+
 function ReferralsPageContent() {
   const router = useRouter();
   const [referralData, setReferralData] = useState({
@@ -59,7 +62,7 @@ function ReferralsPageContent() {
 
   useEffect(() => {
     fetchReferrals();
-    const intervalId = setInterval(fetchReferrals, 2000);
+    const intervalId = setInterval(fetchReferrals, 20000);
     return () => clearInterval(intervalId);
   }, [router]);
 
@@ -122,7 +125,7 @@ function ReferralsPageContent() {
                 <tr className="bg-[#2D3541]">
                   <th className="p-4 text-left text-gray-400">User</th>
                   <th className="p-4 text-left text-gray-400">Status</th>
-                  <th className="p-4 text-left text-gray-400">Staked Amount</th>
+                  {/* <th className="p-4 text-left text-gray-400">Staked Amount</th> */}
                   <th className="p-4 text-left text-gray-400">Reward</th>
                 </tr>
               </thead>
@@ -139,7 +142,7 @@ function ReferralsPageContent() {
                         {referral.status}
                       </span>
                     </td>
-                    <td className="p-4 text-white">${(referral.stakeAmount || 0).toFixed(2)}</td>
+                    {/* <td className="p-4 text-white">${(referral.stakeAmount || 0).toFixed(2)}</td> */}
                     <td className="p-4 text-white">${(referral.reward || 0).toFixed(2)}</td>
                   </tr>
                 ))}
