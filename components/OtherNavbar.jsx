@@ -5,6 +5,7 @@ import NextImage from "next/image";
  
 const OtherNavbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const links = [
     { name: "Home", href: "/", isActive: true },
@@ -19,6 +20,11 @@ const OtherNavbar = () => {
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/'; // Redirect to home page after logout
   };
 
   return (
@@ -42,16 +48,33 @@ const OtherNavbar = () => {
           ))}
         </div>
 
-        <div className="flex  items-center gap-4 ">
-          <div className="flex  items-center cursor-pointer  gap-4">
-            <h1 className="font-semibold hidden sm:inline-flex">Reece.J</h1>
-            <NextImage
-              src={'/user.png'}
-              width={52}
-              height={52}
-              className="sm:w-[52px] w-10 h-10 rounded-full object-cover sm:h-[52px] "
-              alt=""
-            />
+        <div className="flex items-center gap-4 ">
+          <div className="relative">
+            <div 
+              className="flex items-center cursor-pointer gap-4"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <h1 className="font-semibold hidden sm:inline-flex">Reece.J</h1>
+              <NextImage
+                src={'/user.png'}
+                width={52}
+                height={52}
+                className="sm:w-[52px] w-10 h-10 rounded-full object-cover sm:h-[52px] "
+                alt=""
+              />
+            </div>
+            
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-[#1A1F2B] rounded-lg shadow-lg py-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-[#71798A] hover:text-white hover:bg-[#10141B] transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
           <div
             onClick={toggleDrawer}

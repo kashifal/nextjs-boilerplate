@@ -44,6 +44,11 @@ const SideBar = () => {
     ];
 
 
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = '/'; // Redirect to home page after logout
+      };
+
     const handleLinkClick = (index) => {
         setActiveLink(index);
     };
@@ -72,7 +77,12 @@ const SideBar = () => {
                         ></span>
                         <span>{link.label}</span>
                     </Link>
+
+                   
                 ))}
+                 <button onClick={handleLogout} className="px-4 w-full rounded-lg text-red-700 bg-red-100 py-3">
+                    <h1>logoout</h1>
+                 </button>
             </div>
         </div>
     );

@@ -69,7 +69,7 @@ const SideBar = () => {
             href={link.href}
             onClick={() => handleLinkClick(index)}  // Handle link click to set active state
             className={`flex items-center gap-[20px] p-4 rounded-lg cursor-pointer
-            ${activeLink === index ? 'bg-[#F8F8F8] text-black' : 'bg-white text-[#78859B]'} 
+Link === index ? 'bg-[#F8F8F8] text-black' : 'bg-white text-[#78859B]'} 
             hover:bg-[#F8F8F8] hover:text-black transition-all`}>
             <span
               className="text-2xl"
@@ -78,6 +78,8 @@ const SideBar = () => {
             <span>{link.label}</span>
           </Link>
         ))}
+
+        <h1>logoout</h1>
       </div>
     </div>
   );
