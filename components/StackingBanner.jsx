@@ -3,9 +3,10 @@ import TopUp from "@/components/Topup";
 import QRCodeModal from "@/components/QRmodal";
 import Stake from "@/components/Stake";
 import WithDrawCoin from "@/components/Conwithdraw";
-import WithdrawTo from "@/components/withdraw";
+// import WithdrawTo from "@/components/withdraw";
 import StakingHistory from "@/components/StakingHistory";
 import toast from "react-hot-toast";
+import WithdrawModal from "@/components/WithdrawModal";
 
 import Image from "next/image";
 import { useEffect } from "react";
@@ -191,7 +192,7 @@ const StackingBanner = () => {
           amount: parseFloat(amount),
           coinId: selectedCoinData._id,
           user: JSON.parse(localStorage.getItem('user')).id,
-          status: 'Awaiting approval'
+          status: 'PENDING'
         }),
       });
 
@@ -462,7 +463,7 @@ const StackingBanner = () => {
 
 
       {withdraw &&
-        <WithdrawTo setwithdraw={setwithdraw} />
+        <WithdrawModal drawer={withdraw} setdrawer={setwithdraw} />
       }
 
       {showStakingModal && (
@@ -795,6 +796,17 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
           Continue
         </button>
       </div>
+    </div>
+  )
+}
+
+
+
+// Withdrawal Management modal 
+const WithdrawalManagementModal = () => {
+  return (
+    <div>
+      <h1>Withdrawal Management</h1>
     </div>
   )
 }

@@ -27,7 +27,7 @@ const DashNavBar = () => {
           </form>
         </div>
   
-         
+         <h1 className='text-2xl font-bold'>Admin</h1>
       </div>
     </div>
   

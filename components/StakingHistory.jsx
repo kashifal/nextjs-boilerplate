@@ -76,12 +76,13 @@ const StakingHistory = () => {
       ) : (
         stakingGroups.map((group) => (
             <div key={group.coinName}>
+              <pre>{JSON.stringify(stakingGroups, null, 2)}</pre>
             <h1 className="font-[700] text-[24px] pt-12 sm:text-[20px]"> {group.coinName} - Total Staked: {group.totalStaked.toFixed(0)} {group.coinName} ({group.totalStakedUSDT.toFixed(1)} USDT)</h1>
             <p className="text-sm mb-4">
               Total Profit: {group.totalProfit.toFixed(1)} {group.coinName} <span className='text-[#48FF2C] px-2 text-xs'>({group.totalProfitUSDT.toFixed(1)}  USDT)</span>
             </p>
             <div className="mt-4 grid grid-cols-3 gap-5">
-            {group.stakes.map(({amount,duration,autoStaking,startDate,endDate,dailyProfits,status,apy, _id }) => 
+            {group.stakes.map(({amount,duration,autoStaking,startDate,endDate,dailyProfits,status,apy, _id, totalProfitUSDT }) => 
             {
                 const startDates = new Date(startDate);
                 const currentDate = new Date();
@@ -96,7 +97,19 @@ const StakingHistory = () => {
                   durations - (currentDate - startDates) / (1000 * 60 * 60 * 24),
                   0
                 ).toFixed(0);
-  
+
+                // Find today's profit
+                const today = new Date().toISOString().split('T')[0];
+                const todayProfit = dailyProfits.find(profit => 
+                  new Date(profit.date).toISOString().split('T')[0] === today
+                );
+                
+                // Convert profit to USDT (using the same ratio as total profit to totalProfitUSDT)
+                const profitToUSDTRatio = group.totalProfitUSDT / group.totalProfit;
+                const todayProfitUSDT = todayProfit 
+                  ? (todayProfit.profit * profitToUSDTRatio).toFixed(2)
+                  : '0.00';
+
                 return(
                     <div className="bg-[#172130] rounded-[16px] px-5 py-5">
      {/* <pre>{JSON.stringify(group, null, 2)}</pre> */}
@@ -122,8 +135,7 @@ const StakingHistory = () => {
                   <div>
                     <h1 className="font-medium text-sm">Earned:</h1>
                     <div className="flex gap-1.5 text-sm text-white">
-                      <p className='text-[#48FF2C]'>+{group.totalProfitUSDT.toFixed(1)} USDT</p>
-                      {/* <h6 className="text-[#48FF2C]">+$254.00</h6> */}
+                        <p className='text-[#48FF2C]'>+{totalProfitUSDT.toFixed(1)} USDT</p>
                     </div>
                   </div>
                 </div>
@@ -141,7 +153,12 @@ const StakingHistory = () => {
                   <span className="text-[#77849B]">Remaining days:</span> {/* */}{/* */}{" "}
                   {remainingDays} days
                 </div>
-
+                <div>
+                    <h1 className="font-medium text-sm">Today's Earning:</h1>
+                    <div className="flex gap-1.5 text-sm text-white">
+                        <p className='text-[#48FF2C]'>+{todayProfitUSDT} USDT</p>
+                    </div>
+                </div>
               
               </div>
                 )

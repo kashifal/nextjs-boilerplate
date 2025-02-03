@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 
 
-const TopUp = ({drawer , setdrawer}) => {
+const WithdrawModal = ({drawer , setdrawer}) => {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [drawerOther2, setdrawerOther2] = useState(false)
@@ -15,6 +15,11 @@ const TopUp = ({drawer , setdrawer}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
+  const [walletAddress, setWalletAddress] = useState('');
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [userBalances, setUserBalances] = useState({});
+  const [availableBalance, setAvailableBalance] = useState(0);
+  const [amount, setAmount] = useState(50);
 
   // const coins = [
   //   { id: 1, name: "Bitcoin", color: "#F7931A", icon: <BitcoinIcon /> },
@@ -34,7 +39,7 @@ const TopUp = ({drawer , setdrawer}) => {
             icon: coin.logoUrl,
             amount: '0.00',
             symbol: coin.name,
-            qrcode: coin.qrcode,
+           
             walletAddress: coin.walletAddress
           }));
          console.log(formattedCoins,'formattedCoins');
@@ -48,11 +53,49 @@ const TopUp = ({drawer , setdrawer}) => {
     fetchCoins();
   }, []);
 
+  useEffect(() => {
+    const fetchUserBalances = async () => {
+      try {
+        const userId = JSON.parse(localStorage.getItem('user')).id;
+        const response = await fetch(`/api/topup?userId=${userId}`);
+        const data = await response.json();
+        
+        // Calculate total balance for each coin
+        const balances = {};
+        data.topups.forEach(topup => {
+          if (topup.status === 'APPROVED') {
+            if (!balances[topup.coin]) {
+              balances[topup.coin] = 0;
+            }
+            balances[topup.coin] += topup.amount;
+          }
+        });
+
+        // Subtract pending withdrawals
+        const withdrawalResponse = await fetch(`/api/withdrawal?userId=${userId}`);
+        const withdrawalData = await withdrawalResponse.json();
+        
+        withdrawalData.withdrawals.forEach(withdrawal => {
+          if (withdrawal.status === 'PENDING') {
+            if (balances[withdrawal.coin]) {
+              balances[withdrawal.coin] -= withdrawal.amount;
+            }
+          }
+        });
+        
+        setUserBalances(balances);
+      } catch (error) {
+        console.error('Error fetching user balances:', error);
+        toast.error('Failed to fetch available balances');
+      }
+    };
+
+    fetchUserBalances();
+  }, []);
+
    const [selectedDuration, setSelectedDuration] = useState(60);
     const [lockedAmount, setLockedAmount] = useState("0.00");
     const [autoStaking, setAutoStaking] = useState(false);
-    const [agreeToTerms, setAgreeToTerms] = useState(false);
-    const [amount, setAmount] = useState(0.00);
  
   
     const durationOptions = [
@@ -120,7 +163,7 @@ const TopUp = ({drawer , setdrawer}) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: parseFloat(amount),
+          amount: 50,
           coinId: selectedCoinData._id,
           user: JSON.parse(localStorage.getItem('user')).id,
         }),
@@ -154,13 +197,65 @@ const TopUp = ({drawer , setdrawer}) => {
     setShowQRModal(true);
   };
 
-  const handleConfirmDeposit = async () => {
+  const handleAmountChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (value > availableBalance) {
+      toast.error('Amount exceeds available balance');
+      return;
+    }
+    setAmount(value);
+  };
+
+  const handleWithdrawel = async () => {
     try {
+      // Add console logs for debugging
+      console.log('Starting withdrawal process...');
+      console.log('Selected coin:', selectedCoin);
+      console.log('Amount:', amount);
+      console.log('Wallet address:', walletAddress);
+
+      // Validations
+      // if (!selectedCoin && selectedCoin !== 0) {  // Changed this check
+      //   console.log('no coin');
+
+      //   return;
+      // }
+
+      // if (!amount || isNaN(amount) || amount <= 0) {
+      //   console.log('no amount');
+      //   return;
+      // }
+
+      // if (!walletAddress) {
+      //   toast.error('Please enter a valid wallet address');
+      //   return;
+      // }
+
+      // const selectedCoinData = coins[selectedCoin];
+      // console.log('Selected coin data:', selectedCoinData);
+
+      // if (!selectedCoinData) {
+      //   console.log('no amount');
+
+      // }
+
+      // if (amount > availableBalance) {
+      //   console.log('amount exceeds available balance');
+      
+      // }
+
       setIsSubmitting(true);
-      
+
+      // console.log('Making API call with data:', {
+      //   amount: parseFloat(amount),
+      //   coinId: selectedCoinData._id,
+      //   user: JSON.parse(localStorage.getItem('user')).id,
+      //   walletAddress: 'walletAddress'
+      // });
       const selectedCoinData = coins[selectedCoin];
-      
-      const response = await fetch('/api/topup', {
+
+
+      const response = await fetch('/api/withdrawal', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,26 +264,30 @@ const TopUp = ({drawer , setdrawer}) => {
           amount: parseFloat(amount),
           coinId: selectedCoinData._id,
           user: JSON.parse(localStorage.getItem('user')).id,
-          status: 'PENDING'
+          walletAddress: 'jhgjhgjhghfgfdfgddgf'
         }),
       });
 
+      console.log('API response received:', response);
+
       const data = await response.json();
+      console.log('API response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
       }
 
-      toast.success('Topup submitted successfully');
+      toast.success('Withdrawal request submitted successfully');
       setShowQRModal(false);
       setdrawer(false);
       // Reset form
       setSelectedCoin(null);
-      setAmount(0);
+      setAmount('');
+      setWalletAddress('');
       
     } catch (error) {
-      console.error('Error submitting topup:', error);
-      toast.error(error.message || 'Failed to submit topup');
+      console.error('Error in withdrawal process:', error);
+      toast.error(error.message || 'Failed to submit withdrawal');
     } finally {
       setIsSubmitting(false);
     }
@@ -218,6 +317,13 @@ const TopUp = ({drawer , setdrawer}) => {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
+  const handleCoinSelect = (index) => {
+    setSelectedCoin(index);
+    const coinId = coins[index]._id;
+    const balance = userBalances[coinId] || 0;
+    setAvailableBalance(balance);
+  };
+
   return (
     <>
     {/* 1st modal for choose coin */}
@@ -225,7 +331,7 @@ const TopUp = ({drawer , setdrawer}) => {
       <div className="w-[24rem] md:w-[30rem] rounded-lg   overflow-auto bg-white p-6 shadow-lg">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-700">
-            Choose coin to top up
+          Choose coin to withdraw
           </h2>
 
           <button
@@ -251,18 +357,21 @@ const TopUp = ({drawer , setdrawer}) => {
           {coins.map(({amount, icon, name, symbol}, index) => (
             <div
               key={index}
-              onClick={() => setSelectedCoin(index)}
+              onClick={() => handleCoinSelect(index)}
               className={`relative flex flex-col items-center text-center rounded-2xl border p-4 cursor-pointer ${
                 selectedCoin === index ? "border-green-500 bg-green-100" : ""
               }`}
             >
-             <img
-              src={`${icon}`}
-              fill
-              className="rounded-full h-8 w-8"
-            />
-              <span className="text-sm font-medium mt-[20px] text-black">
+              <img
+                src={`${icon}`}
+                fill
+                className="rounded-full h-8 w-8"
+              />
+              <span className="text-sm font-medium mt-2 text-black">
                 {name}
+              </span>
+              <span className="text-xs text-gray-500 mt-1">
+                Available: {userBalances[coins[index]._id]?.toFixed(2) || '0.00'} {symbol}
               </span>
               {selectedCoin === index && (
                 <svg
@@ -292,32 +401,7 @@ const TopUp = ({drawer , setdrawer}) => {
         </div>
         {/* Add remaining modal content here... */}
 
-        <div className="mb-6">
-          <label
-            htmlFor="topup-amount"
-            className="mb-2 block text-sm font-medium text-black"
-          >
-            Top up amount
-          </label>
-          <div className="flex items-center rounded-lg border px-4 py-2">
-            <input
-              id="topup-amount"
-              onChange={(e) => setAmount(e.target.value)}
-              type="number"
-              placeholder="0.00"
-              className="flex-1 text-black border-r placeholder:text-[black] border-[#E1E1E1] outline-none"
-            />
-            <div className="ml-2 flex items-center space-x-2">
-              {selectedCoin !== null && (
-                <img 
-                  src={coins[selectedCoin]?.icon} 
-                  alt={coins[selectedCoin]?.name}
-                  className="h-[30px] w-[30px] object-contain" 
-                />
-              )}
-            </div>
-          </div>
-        </div>
+         
         <button 
             onClick={handleContinue}  
             disabled={isSubmitting}
@@ -330,85 +414,104 @@ const TopUp = ({drawer , setdrawer}) => {
 
     {/* QR Code Modal */}
     {showQRModal && (
-      <div className="fixed z-[999999] inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div className="bg-white rounded-2xl w-[30rem] p-6">
+      <div className="fixed z-[100000000] inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="bg-white rounded-2xl w-[24rem] p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-black">Deposit</span>
-              <div className="flex items-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12C1.25 17.928 6.072 22.75 12 22.75C17.928 22.75 22.75 17.928 22.75 12C22.75 6.072 17.928 1.25 12 1.25ZM12 21.25C6.899 21.25 2.75 17.101 2.75 12C2.75 6.899 6.899 2.75 12 2.75C17.101 2.75 21.25 6.899 21.25 12C21.25 17.101 17.101 21.25 12 21.25ZM15.53 14.47C15.823 14.763 15.823 15.238 15.53 15.531C15.384 15.677 15.192 15.751 15 15.751C14.808 15.751 14.616 15.678 14.47 15.531L11.47 12.531C11.329 12.39 11.25 12.199 11.25 12.001V7.00098C11.25 6.58698 11.586 6.25098 12 6.25098C12.414 6.25098 12.75 6.58698 12.75 7.00098V11.6899L15.53 14.47Z" fill="#34CA1D"/>
-                </svg>
-                <span className="text-gray-500 text-sm ml-2">{formatTime(timeLeft)}</span>
-              </div>
-            </div>
-            <button onClick={() => setShowQRModal(false)} className="text-gray-500 hover:text-gray-700">
-              <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-                <circle cx="17" cy="17" r="16.5" stroke="#C5C5C5"/>
-                <path d="M22.4415 21.5583C22.6856 21.8025 22.6856 22.1984 22.4415 22.4425C22.3198 22.5642 22.1598 22.6258 21.9998 22.6258C21.8398 22.6258 21.6798 22.565 21.5581 22.4425L16.9998 17.8842L12.4415 22.4425C12.3198 22.5642 12.1598 22.6258 11.9998 22.6258C11.8398 22.6258 11.6798 22.565 11.5581 22.4425C11.314 22.1984 11.314 21.8025 11.5581 21.5583L16.1165 17L11.5581 12.4417C11.314 12.1975 11.314 11.8017 11.5581 11.5575C11.8023 11.3133 12.1981 11.3133 12.4423 11.5575L17.0006 16.1159L21.559 11.5575C21.8031 11.3133 22.199 11.3133 22.4431 11.5575C22.6873 11.8017 22.6873 12.1975 22.4431 12.4417L17.8848 17L22.4415 21.5583Z" fill="#C5C5C5"/>
+            <h2 className="text-lg text-gray-700 font-semibold">Withdrawal</h2>
+            <button onClick={() => setShowQRModal(false)} className="text-gray-500">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </button>
           </div>
 
-          {/* Coin Label */}
-          <div className="flex items-center  justify-center gap-2 mb-6">
-            {selectedCoin !== null && (
-              <>
+          {/* Wallet Address Input */}
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm text-gray-700 mb-2">Wallet address</label>
+            <input 
+              type="text" 
+              placeholder="Enter wallet address"
+              className="w-full p-3 border text-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+            />
+          </div>
+
+          {/* Amount Input */}
+          <div className="mb-6">
+            <label className="block text-sm text-gray-700 mb-2">Withdrawal amount</label>
+            <div className="relative">
+              <input 
+                type="number" 
+                value={amount}
+                onChange={handleAmountChange}
+                placeholder="0.00"
+                className="w-full p-3 border text-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 <img 
-                  src={`${process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || ''}/${coins[selectedCoin]?.icon}`} 
-                  alt={coins[selectedCoin]?.name}
-                  className="w-8 h-8 rounded-full"
+                  src={coins[selectedCoin]?.icon} 
+                  alt="" 
+                  className="w-6 h-6 rounded-full"
                 />
-                <span className="font-medium text-black">{coins[selectedCoin]?.name}</span>
-              </>
-            )}
-          </div>
-         
-          {/* QR Code */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-              {/* Replace with actual QR code */}
-              <div className=" bg-white">
-                {/* Add your QR code here */}
-                <img src={`${coins[selectedCoin]?.qrcode}`} alt="" />
+                <span className="text-gray-700">{coins[selectedCoin]?.name}</span>
               </div>
             </div>
-            
-            <div className="text-center space-y-4 w-full">
-              <div>
-                <p className="text-gray-500 mb-2">Amount needs to be transferred:</p>
-                <p className="text-2xl font-bold text-black">{amount} {coins[selectedCoin]?.symbol}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Available balance: <span className="text-blue-500">
+                {availableBalance.toFixed(2)} {coins[selectedCoin]?.symbol}
+              </span>
+            </p>
+          </div>
+
+          {/* Withdrawal Limits */}
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm mb-2">Withdrawal limits</label>
+            <p className="text-sm text-gray-500">
+              Minimum: <span>52 USDT</span>
+            </p>
+          </div>
+
+          {/* Summary */}
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <h3 className="text-sm mb-4   text-gray-700">Summary</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Withdrawal amount:</span>
+                <span className="text-gray-700">52 USDT</span>
               </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-2">To address:</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-black truncate">{coins[selectedCoin]?.walletAddress}</span>
-                  <button onClick={()=>{
-                    navigator.clipboard.writeText(coins[selectedCoin]?.walletAddress)
-                  }} className="flex items-center text-black  px-4 py-2 rounded-lg">
-                    <span  className="mr-2 text-sm">Copy address</span>
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
-                      <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2H6zm0-2h8a4 4 0 014 4v11a4 4 0 01-4 4H6a4 4 0 01-4-4V5a4 4 0 014-4z"/>
-                    </svg>
-                  </button>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Commission:</span>
+                <span className="text-gray-700">2%</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span className="text-gray-500">Total withdrawal:</span>
+                <span className="text-yellow-500">50.00 USDT</span>
               </div>
             </div>
           </div>
 
-          <p className="text-center text-gray-500 mb-6">
-            This address only be used to deposit compatible coin. Please be sure before depositing.
-          </p>
+          {/* Terms Checkbox */}
+          <div className="mb-6">
+            <label className="flex text-gray-700 items-center gap-2">
+              <input 
+                type="checkbox" 
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                className="rounded"
+              />
+              <span className="text-sm">
+                I agree with <a href="#" className="text-blue-500">Terms</a> and <a href="#" className="text-blue-500">Privacy</a>
+              </span>
+            </label>
+          </div>
 
+          {/* Confirm Button */}
           <button
-            onClick={handleConfirmDeposit}
-            disabled={isSubmitting}
+            onClick={handleWithdrawel}
+            disabled={!agreeToTerms || isSubmitting}
             className="w-full rounded-lg bg-[#48FF2C] py-3 font-medium text-black hover:bg-green-600 disabled:opacity-50"
           >
-            {isSubmitting ? 'Processing...' : 'Confirm deposit'}
+            Confirm
           </button>
         </div>
       </div>
@@ -417,4 +520,4 @@ const TopUp = ({drawer , setdrawer}) => {
   );
 };
 
-export default TopUp;
+export default WithdrawModal;

@@ -18,13 +18,15 @@ const coinSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Coin name is required'],
     trim: true,
-    unique: true
+    unique: true,
+    index: true
   },
   walletAddress: {
     type: String,
     required: [true, 'Wallet address is required'],
     trim: true,
-    unique: true
+    unique: true,
+    index: true
   },
   logoUrl: {
     type: String,
@@ -61,7 +63,6 @@ const coinSchema = new mongoose.Schema({
     default: true
   },
   symbol: {
-    
     type: String,
     required: true
   }
@@ -70,9 +71,9 @@ const coinSchema = new mongoose.Schema({
   versionKey: false // Removes the __v field
 });
 
-// Indexes for better query performance
-coinSchema.index({ name: 1 });
-coinSchema.index({ walletAddress: 1 });
+// Remove these index declarations since we already have index: true in the schema fields
+// coinSchema.index({ name: 1 });
+// coinSchema.index({ walletAddress: 1 });
 coinSchema.index({ createdAt: -1 });
 
 // Create the model if it doesn't exist, otherwise use the existing one

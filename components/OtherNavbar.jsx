@@ -1,11 +1,12 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
  
 import NextImage from "next/image";
  
 const OtherNavbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const links = [
     { name: "Home", href: "/", isActive: true },
@@ -26,6 +27,11 @@ const OtherNavbar = () => {
     localStorage.clear();
     window.location.href = '/'; // Redirect to home page after logout
   };
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setUser(user);
+  }, []);
 
   return (
     <>
@@ -54,7 +60,7 @@ const OtherNavbar = () => {
               className="flex items-center cursor-pointer gap-4"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <h1 className="font-semibold hidden sm:inline-flex">Reece.J</h1>
+              <h1 className="font-light hidden sm:inline-flex text-green-700 bg-green-50 px-4 py-1 rounded-sm">Loggedin as {user?.username}</h1>
               <NextImage
                 src={'/user.png'}
                 width={52}
@@ -67,6 +73,12 @@ const OtherNavbar = () => {
             {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-[#1A1F2B] rounded-lg shadow-lg py-2">
+                {/* <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-[#71798A] hover:text-white hover:bg-[#10141B] transition-colors"
+                >
+                  Referrals
+                </button> */}
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-[#71798A] hover:text-white hover:bg-[#10141B] transition-colors"

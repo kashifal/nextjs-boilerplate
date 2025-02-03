@@ -5,6 +5,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth'
 import Usdt from '@/components/Usdt'
 import MainLayout from '@/components/layout/MainLayout'
 import StakingAssets from '@/components/StakingAssets'
+import WithdrawalList from '@/components/WithdrawalList'
 
 const Admin = () => {
   // This will automatically redirect non-admin users
@@ -74,6 +75,7 @@ const Admin = () => {
 
         <Usdt stats={stats} />
         <StakingAssets stats={stats} />
+       <div className="p-6"> <WithdrawalList /></div>
       </MainLayout>
     </div>
   )

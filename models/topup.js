@@ -18,9 +18,20 @@ const topupSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Awaiting approval'
+    enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    default: 'PENDING'
+  },
+  pendingWithdrawals: [{
+    withdrawalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Withdrawal'
+    },
+    amount: Number
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
- 
 }, {
   timestamps: true // Automatically manage createdAt and updatedAt
 });
