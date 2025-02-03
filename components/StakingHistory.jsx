@@ -76,7 +76,7 @@ const StakingHistory = () => {
       ) : (
         stakingGroups.map((group) => (
             <div key={group.coinName}>
-              <pre>{JSON.stringify(stakingGroups, null, 2)}</pre>
+              {/* <pre>{JSON.stringify(stakingGroups, null, 2)}</pre> */}
             <h1 className="font-[700] text-[24px] pt-12 sm:text-[20px]"> {group.coinName} - Total Staked: {group.totalStaked.toFixed(0)} {group.coinName} ({group.totalStakedUSDT.toFixed(1)} USDT)</h1>
             <p className="text-sm mb-4">
               Total Profit: {group.totalProfit.toFixed(1)} {group.coinName} <span className='text-[#48FF2C] px-2 text-xs'>({group.totalProfitUSDT.toFixed(1)}  USDT)</span>
