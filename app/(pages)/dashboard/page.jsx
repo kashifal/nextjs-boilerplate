@@ -80,9 +80,6 @@ const Stacking = () => {
 
 
       <StackingBanner />
-
-      <StackCards />
-      {/* <Marketing /> */}
       <StakingHistory />
       <Footer />
       </div>

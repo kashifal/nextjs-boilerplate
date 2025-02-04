@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 const StakingAssets = ({stats}) => {
 
@@ -12,6 +12,7 @@ const StakingAssets = ({stats}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [totalApprovedAmount, setTotalApprovedAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const calculateTotalApprovedAmount = () => {
     const total = topups
@@ -21,22 +22,35 @@ const StakingAssets = ({stats}) => {
   };
 
   const fetchAllUsers = async () => {
-    const response = await fetch('/api/user');
-    const data = await response.json();
-    setUsers(data.users);
-    console.log(data.users, 'users');
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/user');
+      const data = await response.json();
+      setUsers(data.users);
+      console.log(data.users, 'users');
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
   const fetchallCoins = async () => {
-    const response = await fetch('/api/coin');
-    const data = await response.json();
-    setCoins(data.coins);
-    console.log(data.coins, 'coins');
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/coin');
+      const data = await response.json();
+      setCoins(data.coins);
+      console.log(data.coins, 'coins');
+    } catch (error) {
+      console.error('Error fetching coins:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   const fetchTopups = async () => {
     try {
+      setIsLoading(true);
       const user = JSON.parse(localStorage.getItem('user'));
-      // if (!user?.id) return;
-
       const response = await fetch(`/api/topup`);
       if (!response.ok) throw new Error('Failed to fetch topups');
 
@@ -45,6 +59,8 @@ const StakingAssets = ({stats}) => {
       console.log(data.topups);
     } catch (error) {
       console.error('Error fetching topups:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -220,13 +236,76 @@ const StakingAssets = ({stats}) => {
 
 
 
+  const refreshAllData = async () => {
+    try {
+      setIsLoading(true);
+      await Promise.all([
+        fetchTopups(),
+        fetchallCoins(),
+        fetchAllUsers()
+      ]);
+      calculateTotalApprovedAmount();
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="bg-[#F0F1F1] p-6 text-black">
 
       {/* <pre>{JSON.stringify(stats.coinStakings, null, 2)}</pre> */}
       
-      {/* Header */}
-      <h2 className="text-xl font-semibold mb-4">Staking assets</h2>
+      {/* Header with Refresh Button */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Staking assets</h2>
+        <button 
+          onClick={refreshAllData}
+          disabled={isLoading}
+          className="p-2 rounded-full hover:bg-white transition-colors"
+          title="Refresh data"
+        >
+          <svg 
+            className={`w-6 h-6 text-gray-600 ${isLoading ? 'animate-spin' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg flex items-center space-x-3">
+            <svg 
+              className="animate-spin h-6 w-6 text-gray-600"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+              />
+            </svg>
+            <span className="text-gray-700">Loading...</span>
+          </div>
+        </div>
+      )}
 
       {/* Assets Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

@@ -375,6 +375,23 @@ const StackingBanner = () => {
     background: "linear-gradient(135deg, #3096FE, #4F96DD, #5136B1, #7064C9)",
   };
 
+  const refreshAllData = async () => {
+    try {
+      setIsSubmitting(true); // Use existing loading state
+      await Promise.all([
+        fetchTopups(),
+        fetchallCoins(),
+        calculateTotalApprovedAmount()
+      ]);
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
 
@@ -382,17 +399,39 @@ const StackingBanner = () => {
         {/* <StakingHistory /> */}
         <div style={gradientStyle} className="rounded-[12px] py-6 px-4">
           <div className="w-[93%] flex items-center justify-between gap-5 flex-wrap mx-auto">
-            <div className="">
-            {/* <pre>{JSON.stringify(coins, null, 2)}</pre> */}
-              <h4 className="text-[18px] font-medium">Total Balance</h4>
-              <div className="flex items-center gap-5 mt-5">
-                <h1 className="font-[700] text-3xl sm:text-[40px]">
-                  ${totalApprovedAmount}
-                </h1>
-                <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
-                  +24%
+            <div className="flex items-center gap-3">
+              <div>
+                <h4 className="text-[18px] font-medium">Total Balance</h4>
+                <div className="flex items-center gap-5 mt-5">
+                  <h1 className="font-[700] text-3xl sm:text-[40px]">
+                    ${totalApprovedAmount}
+                  </h1>
+                  <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
+                    +24%
+                  </div>
                 </div>
               </div>
+              <button 
+                onClick={refreshAllData}
+                disabled={isSubmitting}
+                className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                title="Refresh data"
+              >
+                <svg 
+                  className={`w-6 h-6 ${isSubmitting ? 'animate-spin' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+                  />
+                </svg>
+              </button>
             </div>
 
             <div className="flex items-center flex-wrap gap-[11px]">
