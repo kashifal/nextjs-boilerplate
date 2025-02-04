@@ -12,7 +12,8 @@ const WithdrawalList = () => {
       setIsLoading(true);
       const response = await fetch('/api/withdrawal');
       const data = await response.json();
-      setWithdrawals(data.withdrawals);
+      const validWithdrawals = data.withdrawals.filter(w => w && w.user);
+      setWithdrawals(validWithdrawals);
       toast.success('Withdrawals refreshed');
     } catch (error) {
       console.error('Error fetching withdrawals:', error);
@@ -96,98 +97,112 @@ const WithdrawalList = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {withdrawals.map((withdrawal) => (
-              <tr key={withdrawal._id}>
-                <td className="px-6 py-4 whitespace-nowrap">{withdrawal.user.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{withdrawal.coin.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{withdrawal.amount}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {withdrawal.walletAddress.slice(0, 10)}...
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    withdrawal.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                    withdrawal.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {withdrawal.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {new Date(withdrawal.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {withdrawal.status === 'PENDING' && (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleStatusUpdate(withdrawal._id, 'APPROVED')}
-                        disabled={processingId === withdrawal._id}
-                        className={`${
-                          processingId === withdrawal._id
-                            ? 'bg-green-400 cursor-not-allowed'
-                            : 'bg-green-500 hover:bg-green-600'
-                        } text-white px-3 py-1 rounded-md text-sm flex items-center justify-center min-w-[80px]`}
-                      >
-                        {processingId === withdrawal._id ? (
-                          <svg 
-                            className="animate-spin h-5 w-5" 
-                            fill="none" 
-                            viewBox="0 0 24 24"
-                          >
-                            <circle 
-                              className="opacity-25" 
-                              cx="12" 
-                              cy="12" 
-                              r="10" 
-                              stroke="currentColor" 
-                              strokeWidth="4"
-                            />
-                            <path 
-                              className="opacity-75" 
-                              fill="currentColor" 
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                        ) : (
-                          'Approve'
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleStatusUpdate(withdrawal._id, 'REJECTED')}
-                        disabled={processingId === withdrawal._id}
-                        className={`${
-                          processingId === withdrawal._id
-                            ? 'bg-red-400 cursor-not-allowed'
-                            : 'bg-red-500 hover:bg-red-600'
-                        } text-white px-3 py-1 rounded-md text-sm flex items-center justify-center min-w-[80px]`}
-                      >
-                        {processingId === withdrawal._id ? (
-                          <svg 
-                            className="animate-spin h-5 w-5" 
-                            fill="none" 
-                            viewBox="0 0 24 24"
-                          >
-                            <circle 
-                              className="opacity-25" 
-                              cx="12" 
-                              cy="12" 
-                              r="10" 
-                              stroke="currentColor" 
-                              strokeWidth="4"
-                            />
-                            <path 
-                              className="opacity-75" 
-                              fill="currentColor" 
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                        ) : (
-                          'Reject'
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
+              withdrawal && (
+                <tr key={withdrawal._id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {withdrawal?.user?.email || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {withdrawal?.coin?.name || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {withdrawal?.amount || '0'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {withdrawal?.walletAddress ? 
+                      `${withdrawal.walletAddress.slice(0, 10)}...` : 
+                      'N/A'
+                    }
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      withdrawal?.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                      withdrawal?.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {withdrawal?.status || 'PENDING'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {withdrawal?.createdAt ? 
+                      new Date(withdrawal.createdAt).toLocaleDateString() : 
+                      'N/A'
+                    }
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {withdrawal?.status === 'PENDING' && (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleStatusUpdate(withdrawal._id, 'APPROVED')}
+                          disabled={processingId === withdrawal._id}
+                          className={`${
+                            processingId === withdrawal._id
+                              ? 'bg-green-400 cursor-not-allowed'
+                              : 'bg-green-500 hover:bg-green-600'
+                          } text-white px-3 py-1 rounded-md text-sm flex items-center justify-center min-w-[80px]`}
+                        >
+                          {processingId === withdrawal._id ? (
+                            <svg 
+                              className="animate-spin h-5 w-5" 
+                              fill="none" 
+                              viewBox="0 0 24 24"
+                            >
+                              <circle 
+                                className="opacity-25" 
+                                cx="12" 
+                                cy="12" 
+                                r="10" 
+                                stroke="currentColor" 
+                                strokeWidth="4"
+                              />
+                              <path 
+                                className="opacity-75" 
+                                fill="currentColor" 
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              />
+                            </svg>
+                          ) : (
+                            'Approve'
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleStatusUpdate(withdrawal._id, 'REJECTED')}
+                          disabled={processingId === withdrawal._id}
+                          className={`${
+                            processingId === withdrawal._id
+                              ? 'bg-red-400 cursor-not-allowed'
+                              : 'bg-red-500 hover:bg-red-600'
+                          } text-white px-3 py-1 rounded-md text-sm flex items-center justify-center min-w-[80px]`}
+                        >
+                          {processingId === withdrawal._id ? (
+                            <svg 
+                              className="animate-spin h-5 w-5" 
+                              fill="none" 
+                              viewBox="0 0 24 24"
+                            >
+                              <circle 
+                                className="opacity-25" 
+                                cx="12" 
+                                cy="12" 
+                                r="10" 
+                                stroke="currentColor" 
+                                strokeWidth="4"
+                              />
+                              <path 
+                                className="opacity-75" 
+                                fill="currentColor" 
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              />
+                            </svg>
+                          ) : (
+                            'Reject'
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              )
             ))}
           </tbody>
         </table>
