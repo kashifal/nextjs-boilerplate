@@ -312,8 +312,8 @@ const StakingAssets = ({stats}) => {
         {/* Ethereum Card */}
 
         {
-          stats.coinStakings.map(({coinName,totalStaked,logoUrl,totalStakedUSDT,totalProfit,totalProfitUSDT,numberOfStakes }) => (
-<div className="bg-white p-4 rounded-2xl shadow-sm">
+          stats?.coinStakings?.map(({coinName,totalStaked,logoUrl,totalStakedUSDT,totalProfit,totalProfitUSDT,numberOfStakes }) => (
+<div key={coinName} className="bg-white p-4 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <div className="">
               <img className="size-12" src={logoUrl} alt="" />
