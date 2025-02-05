@@ -10,19 +10,18 @@ import WithdrawModal from "@/components/WithdrawModal";
 
 import Image from "next/image";
 import { useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 // Add this function at the top of the file, after the imports
 const getCoinBalance = (coinId, topups) => {
   if (!topups || !coinId) return 0;
-  
-  const coinTopups = topups.filter(topup => 
-    topup.coin === coinId && 
-    topup.status === 'APPROVED'
+
+  const coinTopups = topups.filter(
+    (topup) => topup.coin === coinId && topup.status === "APPROVED"
   );
 
   const totalAmount = coinTopups.reduce((sum, topup) => sum + topup.amount, 0);
-  
+
   return totalAmount;
 };
 
@@ -44,27 +43,26 @@ const StackingBanner = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
 
-
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        const response = await fetch('/api/coin');
+        const response = await fetch("/api/coin");
         const data = await response.json();
         if (data.coins) {
-          const formattedCoins = data.coins.map(coin => ({
+          const formattedCoins = data.coins.map((coin) => ({
             _id: coin._id, // Include the coin ID
             name: coin.name,
             icon: coin.logoUrl,
-            amount: '0.00',
+            amount: "0.00",
             symbol: coin.name,
             qrcode: coin.qrcode,
-            walletAddress: coin.walletAddress
+            walletAddress: coin.walletAddress,
           }));
-          console.log(formattedCoins, 'formattedCoins');
-          setCoins(formattedCoins)
+          console.log(formattedCoins, "formattedCoins");
+          setCoins(formattedCoins);
         }
       } catch (error) {
-        console.error('Error fetching coins:', error);
+        console.error("Error fetching coins:", error);
       }
     };
 
@@ -75,8 +73,7 @@ const StackingBanner = () => {
   const [lockedAmount, setLockedAmount] = useState("0.00");
   const [autoStaking, setAutoStaking] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [amount, setAmount] = useState(0.00);
-
+  const [amount, setAmount] = useState(0.0);
 
   const durationOptions = [
     { days: 14, apr: "8.15%" },
@@ -88,10 +85,9 @@ const StackingBanner = () => {
   ];
 
   const end = () => {
-    setdrawer(false)
-    setdrawerOther3(false)
-  }
-
+    setdrawer(false);
+    setdrawerOther3(false);
+  };
 
   // Calculate dates
   const startDate = new Date().toLocaleDateString("en-GB");
@@ -104,27 +100,21 @@ const StackingBanner = () => {
     durationOptions.find((opt) => opt.days === selectedDuration)?.apr ||
     "16.01%";
 
-
-
-  const [drawerOther, setdrawerOther] = useState(false)
+  const [drawerOther, setdrawerOther] = useState(false);
 
   const openOther = () => {
-
     handleSubmit();
   };
 
-
-
   const openOther2 = () => {
-    setdrawerOther2(!drawerOther2)
-    setdrawerOther(!drawerOther)
-  }
-
+    setdrawerOther2(!drawerOther2);
+    setdrawerOther(!drawerOther);
+  };
 
   const openOther3 = () => {
-    setdrawerOther3(!drawerOther3)
-    setdrawerOther2(!drawerOther2)
-  }
+    setdrawerOther3(!drawerOther3);
+    setdrawerOther2(!drawerOther2);
+  };
 
   const handleSubmit = async () => {
     // if (!selectedCoin || !amount) {
@@ -137,33 +127,32 @@ const StackingBanner = () => {
 
       const selectedCoinData = coins[selectedCoin];
 
-      const response = await fetch('/api/topup', {
-        method: 'POST',
+      const response = await fetch("/api/topup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           amount: parseFloat(amount),
           coinId: selectedCoinData._id,
-          user: JSON.parse(localStorage.getItem('user')).id,
+          user: JSON.parse(localStorage.getItem("user")).id,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || "Something went wrong");
       }
 
-      toast.success('Topup submitted successfully');
+      toast.success("Topup submitted successfully");
       setdrawer(false);
       // Reset form
       setSelectedCoin(null);
       setAmount(0);
-
     } catch (error) {
-      console.error('Error submitting topup:', error);
-      toast.error(error.message || 'Failed to submit topup');
+      console.error("Error submitting topup:", error);
+      toast.error(error.message || "Failed to submit topup");
     } finally {
       setIsSubmitting(false);
     }
@@ -183,35 +172,34 @@ const StackingBanner = () => {
 
       const selectedCoinData = coins[selectedCoin];
 
-      const response = await fetch('/api/topup', {
-        method: 'POST',
+      const response = await fetch("/api/topup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           amount: parseFloat(amount),
           coinId: selectedCoinData._id,
-          user: JSON.parse(localStorage.getItem('user')).id,
-          status: 'PENDING'
+          user: JSON.parse(localStorage.getItem("user")).id,
+          status: "PENDING",
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || "Something went wrong");
       }
 
-      toast.success('Topup submitted successfully');
+      toast.success("Topup submitted successfully");
       setShowQRModal(false);
       setdrawer(false);
       // Reset form
       setSelectedCoin(null);
       setAmount(0);
-
     } catch (error) {
-      console.error('Error submitting topup:', error);
-      toast.error(error.message || 'Failed to submit topup');
+      console.error("Error submitting topup:", error);
+      toast.error(error.message || "Failed to submit topup");
     } finally {
       setIsSubmitting(false);
     }
@@ -220,7 +208,7 @@ const StackingBanner = () => {
   useEffect(() => {
     if (showQRModal && timeLeft > 0) {
       const timer = setInterval(() => {
-        setTimeLeft(prev => {
+        setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             setShowQRModal(false); // Close modal when time runs out
@@ -238,48 +226,53 @@ const StackingBanner = () => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
   };
 
   const fetchallCoins = async () => {
-    const response = await fetch('/api/coin');
+    const response = await fetch("/api/coin");
     const data = await response.json();
     setCoins(data.coins);
     console.log(data.coins);
   };
   const fetchTopups = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.id) return;
 
       const response = await fetch(`/api/topup?userId=${user.id}`);
-      if (!response.ok) throw new Error('Failed to fetch topups');
+      if (!response.ok) throw new Error("Failed to fetch topups");
 
       const data = await response.json();
       setTopups(data.topups);
       console.log(data.topups);
     } catch (error) {
-      console.error('Error fetching topups:', error);
+      console.error("Error fetching topups:", error);
     }
   };
 
   useEffect(() => {
     if (topups.length && coins.length) {
       // Group topups by coin name
-      const grouped = coins.map(coin => {
+      const grouped = coins.map((coin) => {
         const coinTopups = topups
-          .filter(topup => topup.coin === coin._id)
-          .filter(topup => topup.status === 'APPROVED')
-          .map(topup => ({
+          .filter((topup) => topup.coin === coin._id)
+          .filter((topup) => topup.status === "APPROVED")
+          .map((topup) => ({
             coin_id: topup._id,
-            amount: topup.amount
+            amount: topup.amount,
           }));
 
-        const totalAmount = coinTopups.reduce((sum, topup) => sum + topup.amount, 0);
+        const totalAmount = coinTopups.reduce(
+          (sum, topup) => sum + topup.amount,
+          0
+        );
 
         return {
           ...coin,
-          balance: totalAmount // Add balance to coin object
+          balance: totalAmount, // Add balance to coin object
         };
       });
 
@@ -293,54 +286,54 @@ const StackingBanner = () => {
   }, []);
 
   const open = () => {
-    setdrawer(!drawer)
-  }
+    setdrawer(!drawer);
+  };
 
-  const [withdraw, setwithdraw] = useState(false)
+  const [withdraw, setwithdraw] = useState(false);
 
   const withdrawHandler = () => {
-    setwithdraw(prev => !prev)
-  }
+    setwithdraw((prev) => !prev);
+  };
 
   const getCoinById = (id) => {
-    return coins.find(coin => coin._id === id);
+    return coins.find((coin) => coin._id === id);
   };
 
   const calculateTotalApprovedAmount = async () => {
-    console.log(topups, 'mytopups')
-    console.log(coins, 'mycoins')
+    console.log(topups, "mytopups");
+    console.log(coins, "mycoins");
 
     try {
       if (!topups.length || !coins.length) {
-        console.log('No topups or coins available');
+        console.log("No topups or coins available");
         return;
       }
 
       let total = 0;
-      const approvedTopups = topups.filter(t => t.status === 'APPROVED');
+      const approvedTopups = topups.filter((t) => t.status === "APPROVED");
 
       if (approvedTopups.length === 0) {
-        setTotalApprovedAmount('0.000');
+        setTotalApprovedAmount("0.000");
         return;
       }
 
       // Process each approved topup
       for (const topup of approvedTopups) {
         const coin = getCoinById(topup.coin);
-        console.log(coin, 'coin')
+        console.log(coin, "coin");
         if (!coin) {
-          console.log('Coin not found for topup:', topup);
+          console.log("Coin not found for topup:", topup);
           continue;
         }
 
         try {
           const response = await axios({
-            method: 'get',
+            method: "get",
             url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
             headers: {
-              'Accept': 'text/plain',
-              'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
-            }
+              Accept: "text/plain",
+              "X-CoinAPI-Key": process.env.NEXT_PUBLIC_COINAPI_KEY,
+            },
           });
 
           const rate = response.data.rate;
@@ -355,24 +348,9 @@ const StackingBanner = () => {
 
       setTotalApprovedAmount(total.toFixed(3));
     } catch (error) {
-      console.error('Error calculating total in USDT:', error);
-      setTotalApprovedAmount('0.000');
+      console.error("Error calculating total in USDT:", error);
+      setTotalApprovedAmount("0.000");
     }
-  };
-
-  useEffect(() => {
-    // Initial calculation
-    calculateTotalApprovedAmount();
-
-    // Set up interval
-    const interval = setInterval(calculateTotalApprovedAmount, 1000);
-
-    // Cleanup
-    return () => clearInterval(interval);
-  }, [topups, coins]);
-
-  const gradientStyle = {
-    background: "linear-gradient(135deg, #3096FE, #4F96DD, #5136B1, #7064C9)",
   };
 
   const refreshAllData = async () => {
@@ -381,20 +359,38 @@ const StackingBanner = () => {
       await Promise.all([
         fetchTopups(),
         fetchallCoins(),
-        calculateTotalApprovedAmount()
+        calculateTotalApprovedAmount(),
       ]);
-      toast.success('Data refreshed successfully');
+      toast.success("Data refreshed successfully");
     } catch (error) {
-      console.error('Error refreshing data:', error);
-      toast.error('Failed to refresh data');
+      console.error("Error refreshing data:", error);
+      toast.error("Failed to refresh data");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    // Set up interval
+    calculateTotalApprovedAmount();
+    const interval = setInterval(calculateTotalApprovedAmount, 1000);
+
+    // Cleanup
+    return () => clearInterval(interval);
+  }, [topups, coins]);
+
+  useEffect(() => {
+    const interv = setInterval(refreshAllData, 5000);
+    // Cleanup
+    return () => clearInterval(interv);
+  }, []);
+
+  const gradientStyle = {
+    background: "linear-gradient(135deg, #3096FE, #4F96DD, #5136B1, #7064C9)",
+  };
+
   return (
     <>
-
       <div className="max-w-7xl px-4 mx-auto mt-10">
         {/* <StakingHistory /> */}
         <div style={gradientStyle} className="rounded-[12px] py-6 px-4">
@@ -411,24 +407,24 @@ const StackingBanner = () => {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={refreshAllData}
                 disabled={isSubmitting}
                 className="p-2 rounded-full hover:bg-white/20 transition-colors"
                 title="Refresh data"
               >
-                <svg 
-                  className={`w-6 h-6 ${isSubmitting ? 'animate-spin' : ''}`}
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className={`w-6 h-6 ${isSubmitting ? "animate-spin" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
               </button>
@@ -437,7 +433,8 @@ const StackingBanner = () => {
             <div className="flex items-center flex-wrap gap-[11px]">
               <button
                 onClick={open}
-                className="bg-white text-sm font-medium text-black hover:bg-white/80 rounded-[10px] py-[11px] pl-4 pr-[21px] flex items-center gap-2">
+                className="bg-white text-sm font-medium text-black hover:bg-white/80 rounded-[10px] py-[11px] pl-4 pr-[21px] flex items-center gap-2"
+              >
                 <svg
                   width="8"
                   height="16"
@@ -453,7 +450,10 @@ const StackingBanner = () => {
                 Top up
               </button>
 
-              <button onClick={withdrawHandler} className="bg-white text-sm font-medium text-black hover:bg-white/80 rounded-[10px] py-[11px] pl-4 pr-[21px] flex items-center gap-2">
+              <button
+                onClick={withdrawHandler}
+                className="bg-white text-sm font-medium text-black hover:bg-white/80 rounded-[10px] py-[11px] pl-4 pr-[21px] flex items-center gap-2"
+              >
                 <svg
                   className="rotate-180"
                   width="8"
@@ -472,8 +472,7 @@ const StackingBanner = () => {
 
               <button
                 onClick={() => {
-                  console.log('clicked')
-                  setShowStakingModal(true)
+                  setShowStakingModal(true);
                 }}
                 className="bg-[#48FF2C] shadow-sm text-sm font-medium text-black hover:bg-[#48FF2C]/80 rounded-[10px] py-[11px] pl-4 pr-[21px] flex items-center gap-2"
               >
@@ -496,14 +495,9 @@ const StackingBanner = () => {
         </div>
       </div>
 
-      {drawer &&
-        <TopUp drawer={drawer} setdrawer={setdrawer} />
-      }
+      {drawer && <TopUp drawer={drawer} setdrawer={setdrawer} />}
 
-
-      {withdraw &&
-        <WithdrawModal drawer={withdraw} setdrawer={setwithdraw} />
-      }
+      {withdraw && <WithdrawModal drawer={withdraw} setdrawer={setwithdraw} />}
 
       {showStakingModal && (
         <StakingModal
@@ -515,16 +509,21 @@ const StackingBanner = () => {
           totalApprovedAmount={totalApprovedAmount}
         />
       )}
-
     </>
   );
 };
 
 // Rename and update the modal component
 
-
-const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => {
-  const [selectedDuration, setSelectedDuration] = useState(coin.durations[0]?.duration || 60);
+const StakingDetailsModal = ({
+  coin,
+  totalApprovedAmount,
+  onClose,
+  topups,
+}) => {
+  const [selectedDuration, setSelectedDuration] = useState(
+    coin.durations[0]?.duration || 60
+  );
   const [lockedAmount, setLockedAmount] = useState("");
   const [autoStaking, setAutoStaking] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -537,19 +536,21 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
   ).toLocaleDateString("en-GB");
 
   // Get selected APY from coin.durations
-  const selectedAPY = coin.durations.find(
-    (opt) => opt.duration === selectedDuration
-  )?.percentage || 0;
+  const selectedAPY =
+    coin.durations.find((opt) => opt.duration === selectedDuration)
+      ?.percentage || 0;
 
   const handleConfirm = async () => {
     try {
       setIsSubmitting(true);
 
       const startDateObj = new Date();
-      const endDateObj = new Date(startDateObj.getTime() + selectedDuration * 24 * 60 * 60 * 1000);
+      const endDateObj = new Date(
+        startDateObj.getTime() + selectedDuration * 24 * 60 * 60 * 1000
+      );
 
       const stakingInfo = {
-        user: JSON.parse(localStorage.getItem('user')).id,
+        user: JSON.parse(localStorage.getItem("user")).id,
         coin: {
           name: coin?.name,
           id: coin?._id,
@@ -561,29 +562,30 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
           autoStakingEnabled: autoStaking,
           startDate: startDateObj.toISOString(),
           endDate: endDateObj.toISOString(),
-        }
+        },
       };
 
-      const response = await fetch('/api/staking', {
-        method: 'POST',
+      const response = await fetch("/api/staking", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(stakingInfo),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create stake');
+        throw new Error("Failed to create stake");
       }
 
       // Refresh topups and close modal
-      
+      if (typeof window !== undefined) {
+        window.location.reload();
+      }
       // onClose();
-      toast.success('Staking created successfully');
-
+      toast.success("Staking created successfully");
     } catch (error) {
-      console.error('Error creating stake:', error);
-      toast.error(error.message || 'Failed to create stake');
+      console.error("Error creating stake:", error);
+      toast.error(error.message || "Failed to create stake");
     } finally {
       setIsSubmitting(false);
     }
@@ -596,27 +598,37 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
     <div className="fixed z-[999999] inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="w-[32rem] rounded-lg overflow-auto bg-white p-6 max-h-[80vh] shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl text-black font-semibold">Stake {coin?.name}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <h2 className="text-xl text-black font-semibold">
+            Stake {coin?.name}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
-{/* <pre className="text-sm text-gray-800">{JSON.stringify(coin, null, 2)}</pre> */}
+        {/* <pre className="text-sm text-gray-800">{JSON.stringify(coin, null, 2)}</pre> */}
         <div className="mb-6">
           <h3 className="text-base text-black mb-4">Duration</h3>
           <div className="grid grid-cols-3 gap-3">
-            {coin.durations.map(({duration, percentage}, index) => (
+            {coin.durations.map(({ duration, percentage }, index) => (
               <button
                 key={`${duration}-${index}`}
                 onClick={() => setSelectedDuration(duration)}
-                className={`p-3 rounded-lg border text-center ${selectedDuration === duration
-                  ? "border-green-500 bg-green-50"
-                  : "border-gray-200"
-                  }`}
+                className={`p-3 rounded-lg border text-center ${
+                  selectedDuration === duration
+                    ? "border-green-500 bg-green-50"
+                    : "border-gray-200"
+                }`}
               >
-                
                 <div className="font-medium text-black">{duration} Days</div>
                 <div className="text-sm text-gray-500">{percentage}% APY</div>
               </button>
@@ -666,8 +678,8 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             <div>
               <h3 className="text-base text-black">Auto Staking</h3>
               <p className="text-sm text-gray-500 mt-1">
-                Enable Auto-Staking to automatically restake
-                expired products immediately.
+                Enable Auto-Staking to automatically restake expired products
+                immediately.
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -710,9 +722,13 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
             />
             <span className="text-sm">
               I agree with{" "}
-              <a href="#" className="text-blue-500">Terms</a>
-              {" "}and{" "}
-              <a href="#" className="text-blue-500">Privacy</a>
+              <a href="#" className="text-blue-500">
+                Terms
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-blue-500">
+                Privacy
+              </a>
             </span>
           </label>
         </div>
@@ -722,7 +738,7 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
           disabled={!agreeToTerms || !lockedAmount || isSubmitting}
           className="w-full py-3 bg-[#48FF2C] text-black font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Creating stake...' : 'Confirm'}
+          {isSubmitting ? "Creating stake..." : "Confirm"}
         </button>
       </div>
     </div>
@@ -730,14 +746,19 @@ const StakingDetailsModal = ({ coin, totalApprovedAmount, onClose, topups }) => 
 };
 
 // Update StakingModal to show StakingDetailsModal after selection
-const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalApprovedAmount, topups }) => {
+const StakingModal = ({
+  coins,
+  selectedCoin,
+  setSelectedCoin,
+  onClose,
+  totalApprovedAmount,
+  topups,
+}) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const handleContinue = () => {
     setShowDetails(true);
   };
-
-
 
   if (showDetails) {
     return (
@@ -748,7 +769,6 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
         onClose={() => {
           setShowDetails(false);
           onClose();
-
         }}
       />
     );
@@ -760,8 +780,11 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-700">
             Choose coin to stake
-          </h2> 
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             <svg
               width={34}
               height={34}
@@ -836,18 +859,16 @@ const StakingModal = ({ coins, selectedCoin, setSelectedCoin, onClose, totalAppr
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-
-
-// Withdrawal Management modal 
+// Withdrawal Management modal
 const WithdrawalManagementModal = () => {
   return (
     <div>
       <h1>Withdrawal Management</h1>
     </div>
-  )
-}
+  );
+};
 
 export default StackingBanner;
