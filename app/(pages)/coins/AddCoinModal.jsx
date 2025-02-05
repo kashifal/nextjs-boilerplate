@@ -1,16 +1,16 @@
-"use client"
-import { useState, useEffect } from 'react';
+"use client";
+import { useState, useEffect } from "react";
 
 const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    walletAddress: '',
+    name: "",
+    walletAddress: "",
     durationDays: 14,
     apy: 12.2,
-    durations: [{ duration: '', percentage: '' }],
+    durations: [{ duration: "", percentage: "" }],
     qrcode: null,
     logoUrl: null,
-    symbol: ''
+    symbol: "",
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -23,21 +23,29 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
       setFormData({
         ...editingCoin,
         id: editingCoin._id,
-        durations: editingCoin.durations || [{ duration: '', percentage: '' }],
-        symbol: editingCoin.symbol || ''
+        durations: editingCoin.durations || [{ duration: "", percentage: "" }],
+        symbol: editingCoin.symbol || "",
       });
-      setImagePreview(editingCoin.logoUrl ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.logoUrl}` : null);
-      setQrcodePreview(editingCoin.qrcode ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.qrcode}` : null);
+      setImagePreview(
+        editingCoin.logoUrl
+          ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.logoUrl}`
+          : null
+      );
+      setQrcodePreview(
+        editingCoin.qrcode
+          ? `${process.env.NEXT_PUBLIC_URL}/${editingCoin.qrcode}`
+          : null
+      );
     } else {
       setFormData({
-        name: '',
-        walletAddress: '',
+        name: "",
+        walletAddress: "",
         durationDays: 14,
         apy: 12.2,
-        durations: [{ duration: '', percentage: '' }],
+        durations: [{ duration: "", percentage: "" }],
         qrcode: null,
         logoUrl: null,
-        symbol: ''
+        symbol: "",
       });
       setImagePreview(null);
       setQrcodePreview(null);
@@ -70,9 +78,9 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -80,44 +88,44 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
     const newDurations = [...formData.durations];
     newDurations[index] = {
       ...newDurations[index],
-      [field]: value
+      [field]: value,
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      durations: newDurations
+      durations: newDurations,
     }));
 
-    console.log(formData)
+    console.log(formData);
     return;
   };
 
   const addDurationField = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      durations: [...prev.durations, { duration: '', percentage: '' }]
+      durations: [...prev.durations, { duration: "", percentage: "" }],
     }));
   };
 
   const removeDurationField = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      durations: prev.durations.filter((_, i) => i !== index)
+      durations: prev.durations.filter((_, i) => i !== index),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const formDataToSend = new FormData();
-    formDataToSend.append('data', JSON.stringify(formData));
-    
-    if (logoFile) formDataToSend.append('logo', logoFile);
-    if (qrcodeFile) formDataToSend.append('qrcode', qrcodeFile);
 
-    const method = editingCoin ? 'PUT' : 'POST';
-    
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", JSON.stringify(formData));
+
+    if (logoFile) formDataToSend.append("logo", logoFile);
+    if (qrcodeFile) formDataToSend.append("qrcode", qrcodeFile);
+
+    const method = editingCoin ? "PUT" : "POST";
+
     try {
-      const response = await fetch('/api/coin', {
+      const response = await fetch("/api/coin", {
         method,
         body: formDataToSend,
       });
@@ -125,28 +133,31 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
       if (response.ok) {
         onClose();
       } else {
-        console.error('Failed to save coin');
+        console.error("Failed to save coin");
       }
     } catch (error) {
-      console.error('Error saving coin:', error);
+      console.error("Error saving coin:", error);
     }
   };
 
   // Update modal title based on whether we're editing or adding
-  const modalTitle = editingCoin ? 'Edit coin' : 'Add new coin';
-  const submitButtonText = editingCoin ? 'Update coin' : 'Create coin';
+  const modalTitle = editingCoin ? "Edit coin" : "Add new coin";
+  const submitButtonText = editingCoin ? "Update coin" : "Create coin";
 
   if (!isOpen) return null;
 
   return (
     <div
       onClick={(e) => {
-        if (e.target.id === 'modalOverlay') onClose();
+        if (e.target.id === "modalOverlay") onClose();
       }}
       id="modalOverlay"
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
-      <form onSubmit={handleSubmit} className="bg-white text-[black] rounded-2xl min-w-[480px] p-6 relative">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white text-[black] rounded-2xl min-w-[480px] p-6 relative"
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold">{modalTitle}</h2>
           <button
@@ -249,7 +260,12 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     />
                     <feOffset dy={-8} />
                     <feGaussianBlur stdDeviation={8} />
-                    <feComposite in2="hardAlpha" operator="arithmetic" k2={-1} k3={1} />
+                    <feComposite
+                      in2="hardAlpha"
+                      operator="arithmetic"
+                      k2={-1}
+                      k3={1}
+                    />
                     <feColorMatrix
                       type="matrix"
                       values="0 0 0 0 0.7712 0 0 0 0 0.78 0 0 0 0 0.7888 0 0 0 0.48 0"
@@ -302,7 +318,12 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     />
                     <feOffset dy={-8} />
                     <feGaussianBlur stdDeviation={4} />
-                    <feComposite in2="hardAlpha" operator="arithmetic" k2={-1} k3={1} />
+                    <feComposite
+                      in2="hardAlpha"
+                      operator="arithmetic"
+                      k2={-1}
+                      k3={1}
+                    />
                     <feColorMatrix
                       type="matrix"
                       values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
@@ -355,7 +376,12 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     />
                     <feOffset dy={-8} />
                     <feGaussianBlur stdDeviation={4} />
-                    <feComposite in2="hardAlpha" operator="arithmetic" k2={-1} k3={1} />
+                    <feComposite
+                      in2="hardAlpha"
+                      operator="arithmetic"
+                      k2={-1}
+                      k3={1}
+                    />
                     <feColorMatrix
                       type="matrix"
                       values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
@@ -374,8 +400,8 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     gradientUnits="userSpaceOnUse"
                     gradientTransform="translate(32 41.6001) rotate(90) scale(38.4 51.2)"
                   >
-                    <stop stopColor="white" />
-                    <stop offset={1} stopColor="white" stopOpacity={0} />
+                    <stop stop-color="white" />
+                    <stop offset={1} stop-color="white" stopOpacity={0} />
                   </radialGradient>
                   <radialGradient
                     id="paint1_radial_2005_633"
@@ -385,8 +411,8 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     gradientUnits="userSpaceOnUse"
                     gradientTransform="translate(32 41.6001) rotate(90) scale(38.4 51.2)"
                   >
-                    <stop stopColor="white" />
-                    <stop offset={1} stopColor="white" stopOpacity={0} />
+                    <stop stop-color="white" />
+                    <stop offset={1} stop-color="white" stopOpacity={0} />
                   </radialGradient>
                   <radialGradient
                     id="paint2_radial_2005_633"
@@ -396,8 +422,8 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     gradientUnits="userSpaceOnUse"
                     gradientTransform="translate(32 12.7998) rotate(90) scale(25.6)"
                   >
-                    <stop stopColor="white" />
-                    <stop offset={1} stopColor="white" stopOpacity={0} />
+                    <stop stop-color="white" />
+                    <stop offset={1} stop-color="white" stopOpacity={0} />
                   </radialGradient>
                   <radialGradient
                     id="paint3_radial_2005_633"
@@ -407,15 +433,14 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                     gradientUnits="userSpaceOnUse"
                     gradientTransform="translate(32 12.7998) rotate(90) scale(25.6)"
                   >
-                    <stop stopColor="white" />
-                    <stop offset={1} stopColor="white" stopOpacity={0} />
+                    <stop stop-color="white" />
+                    <stop offset={1} stop-color="white" stopOpacity={0} />
                   </radialGradient>
                   <clipPath id="clip0_2005_633">
                     <rect width={64} height={64} rx={32} fill="white" />
                   </clipPath>
                 </defs>
               </svg>
-
             )}
           </div>
           <div className="ml-[10px]">
@@ -452,20 +477,48 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
               />
             ) : (
               <div className="w-16 h-16 bg-gray-100 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 3H9V9H3V3Z" stroke="#8D8D8D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M15 3H21V9H15V3Z" stroke="#8D8D8D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M3 15H9V21H3V15Z" stroke="#8D8D8D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M15 15H21V21H15V15Z" stroke="#8D8D8D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 3H9V9H3V3Z"
+                    stroke="#8D8D8D"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15 3H21V9H15V3Z"
+                    stroke="#8D8D8D"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3 15H9V21H3V15Z"
+                    stroke="#8D8D8D"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15 15H21V21H15V15Z"
+                    stroke="#8D8D8D"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
             )}
           </div>
           <div className="ml-[10px]">
             <p className="font-medium text-sm mb-1">QR Code</p>
-            <p className="text-xs text-gray-500 mb-2">
-              PNG or JPEG format
-            </p>
+            <p className="text-xs text-gray-500 mb-2">PNG or JPEG format</p>
             <div className="flex items-center">
               <input
                 type="file"
@@ -502,9 +555,7 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">
-              Symbol
-            </label>
+            <label className="block text-sm font-medium mb-1.5">Symbol</label>
             <input
               type="text"
               name="symbol"
@@ -541,7 +592,9 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                   <input
                     type="text"
                     value={duration.duration}
-                    onChange={(e) => handleDurationChange(index, 'duration', e.target.value)}
+                    onChange={(e) =>
+                      handleDurationChange(index, "duration", e.target.value)
+                    }
                     placeholder="Enter duration"
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                   />
@@ -553,7 +606,9 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                   <input
                     type="text"
                     value={duration.percentage}
-                    onChange={(e) => handleDurationChange(index, 'percentage', e.target.value)}
+                    onChange={(e) =>
+                      handleDurationChange(index, "percentage", e.target.value)
+                    }
                     placeholder="Enter percentage"
                     className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                   />
@@ -565,8 +620,17 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
                   onClick={() => removeDurationField(index)}
                   className="absolute right-0 top-0 p-0"
                 >
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 3.25H15.441C14.54 3.25 14.502 3.136 14.255 2.396L14.053 1.789C13.746 0.869001 12.889 0.25 11.919 0.25H8.08099C7.11099 0.25 6.253 0.868001 5.947 1.789L5.745 2.396C5.498 3.137 5.46 3.25 4.559 3.25H1C0.586 3.25 0.25 3.586 0.25 4C0.25 4.414 0.586 4.75 1 4.75H2.298L3.065 16.249C3.213 18.474 4.57701 19.75 6.80701 19.75H13.194C15.423 19.75 16.787 18.474 16.936 16.249L17.703 4.75H19C19.414 4.75 19.75 4.414 19.75 4C19.75 3.586 19.414 3.25 19 3.25Z" fill="#AFAFAF" />
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M19 3.25H15.441C14.54 3.25 14.502 3.136 14.255 2.396L14.053 1.789C13.746 0.869001 12.889 0.25 11.919 0.25H8.08099C7.11099 0.25 6.253 0.868001 5.947 1.789L5.745 2.396C5.498 3.137 5.46 3.25 4.559 3.25H1C0.586 3.25 0.25 3.586 0.25 4C0.25 4.414 0.586 4.75 1 4.75H2.298L3.065 16.249C3.213 18.474 4.57701 19.75 6.80701 19.75H13.194C15.423 19.75 16.787 18.474 16.936 16.249L17.703 4.75H19C19.414 4.75 19.75 4.414 19.75 4C19.75 3.586 19.414 3.25 19 3.25Z"
+                      fill="#AFAFAF"
+                    />
                   </svg>
                 </button>
               )}
@@ -578,9 +642,27 @@ const AddCoinModal = ({ onClose, isOpen, editingCoin }) => {
             onClick={addDurationField}
             className="w-full flex items-center justify-center space-x-2 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 3.33334V12.6667" stroke="#8D8D8D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M3.33334 8H12.6667" stroke="#8D8D8D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 3.33334V12.6667"
+                stroke="#8D8D8D"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M3.33334 8H12.6667"
+                stroke="#8D8D8D"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <span className="text-sm text-gray-600">Add field</span>
           </button>
