@@ -228,7 +228,7 @@ const StackingBanner = () => {
           }
           return prev - 1;
         });
-      }, 1000);
+      }, 10000);
 
       return () => clearInterval(timer);
     }
@@ -365,7 +365,7 @@ const StackingBanner = () => {
     calculateTotalApprovedAmount();
 
     // Set up interval
-    const interval = setInterval(calculateTotalApprovedAmount, 1000);
+    const interval = setInterval(calculateTotalApprovedAmount, 10000);
 
     // Cleanup
     return () => clearInterval(interval);
