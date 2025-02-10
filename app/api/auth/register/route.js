@@ -78,10 +78,19 @@ export async function POST(req) {
 
     // For regular users - check if user exists
     const existingUser = await User.findOne({ email });
+    
+    // Add this check for existing users (excluding admin)
+    if (existingUser && email !== 'admin@stakeprofitx.com') {
+      return NextResponse.json(
+        { error: 'Email already registered. Please login instead.' },
+        { status: 400 }
+      );
+    }
+
     let user;
 
-    if (existingUser) {
-      // Existing user - generate new OTP
+    if (existingUser && email === 'admin@stakeprofitx.com') {
+      // Existing admin user - proceed with admin login flow
       const otp = Math.floor(Math.random() * 9000 + 1000).toString();
       const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
