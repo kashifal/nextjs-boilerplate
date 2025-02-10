@@ -417,9 +417,9 @@ const StackingBanner = () => {
                   <h1 className="font-[700] text-3xl sm:text-[40px]">
                     ${totalApprovedAmount}
                   </h1>
-                  <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
+                  {/* <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
                     +24%
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <button
@@ -733,9 +733,9 @@ const StakingDetailsModal = ({
               type="checkbox"
               checked={agreeToTerms}
               onChange={(e) => setAgreeToTerms(e.target.checked)}
-              className="rounded border-gray-300 text-green-500 focus:ring-green-500"
+              className="rounded text-gray-500 border-gray-300 focus:ring-green-500"
             />
-            <span className="text-sm">
+            <span className="text-sm text-gray-500">
               I agree with{" "}
               <a href="#" className="text-blue-500">
                 Terms
