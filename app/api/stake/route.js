@@ -23,7 +23,7 @@ export async function POST(request) {
     });
 
     // Update referral if exists
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/referrals/update`, {
+    await fetch(`${process.env.NEXTAUTH_URL}/api/referrals/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

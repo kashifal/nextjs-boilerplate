@@ -26,7 +26,7 @@ const StakingHistory = () => {
       if (!userId) return; // Don't fetch if userId is not set
 
       try {
-        const response = await fetch(`http://localhost:3000/api/users/details`, {
+        const response = await fetch('/api/users/details', {
           cache: 'no-store'
         });
         const { data } = await response.json();
