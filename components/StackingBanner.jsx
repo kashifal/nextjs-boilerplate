@@ -417,9 +417,9 @@ const StackingBanner = () => {
                   <h1 className="font-[700] text-3xl sm:text-[40px]">
                     ${totalApprovedAmount}
                   </h1>
-                  <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
+                  {/* <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
                     +24%
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <button

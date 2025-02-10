@@ -153,7 +153,8 @@ const Usdt = ({ stats }) => {
                                         <path d="M1 6L6 1L11 6" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         <path d="M6 13V1" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
-                                </span> 37.8% <span className="text-[#666E78]">from last week</span> </p>
+                                {/* </span> 37.8% <span className="text-[#666E78]">from last week</span>*/}
+                                 </p> 
                         </div>
 
                         <div className="  flex flex-col md:border-r-2 border-gray-200 lg:mr-5 lg:ml-6 ">
@@ -175,7 +176,8 @@ const Usdt = ({ stats }) => {
                                         <path d="M6 0.999999L6 13" stroke="#FF6A55" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
 
-                                </span> 37.8% <span className="text-[#666E78]">from last week</span> </p>
+                                {/* </span> 37.8% <span className="text-[#666E78]">from last week</span>  */}
+                                </p>
                         </div>
 
                         <div className="  flex flex-col  lg:mr-5 lg:ml-6 ">
