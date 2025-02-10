@@ -239,7 +239,7 @@ export default function RegisterForm({ initialReferralCode }) {
             </div>
           </form>
           <div className="mt-4">
-            <Link href="/">
+            <Link href="/home">
               <button
                 type="button"
                 className="w-full rounded-lg border border-[#2F2F2F] py-2 font-semibold text-white"
