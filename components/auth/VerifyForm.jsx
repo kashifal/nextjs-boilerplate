@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 export default function VerifyForm() {
   const [otp, setOtp] = useState('');
@@ -71,21 +72,96 @@ export default function VerifyForm() {
   return (
     <div className="bg-[#10141B] min-h-screen">
       <div className="flex items-center bg-[#10141B] p-6">
-        <svg width="45" height="42" viewBox="0 0 45 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect y="0.5" width="45" height="41" rx="6" fill="#48FF2C" />
-          <circle cx="22.5" cy="21" r="13.5" fill="black" />
-          <path d="M28.9722 20.6593L27.0405 20.1075C25.264 19.5996 23.8998 18.236 23.3919 16.4588L22.8401 14.5272C22.753 14.2233 22.2458 14.2233 22.1587 14.5272L21.6069 16.4588C21.0991 18.236 19.7348 19.6003 17.9583 20.1075L16.0267 20.6593C15.8744 20.7025 15.7695 20.842 15.7695 21C15.7695 21.1579 15.8744 21.2968 16.0267 21.3407L17.9583 21.8925C19.7348 22.4004 21.0991 23.7639 21.6069 25.5411L22.1587 27.4727C22.2026 27.625 22.3415 27.7299 22.4994 27.7299C22.6574 27.7299 22.7962 27.625 22.8401 27.4727L23.3919 25.5411C23.8998 23.7639 25.264 22.3996 27.0405 21.8925L28.9722 21.3407C29.1245 21.2975 29.2293 21.1579 29.2293 21C29.2293 20.842 29.1245 20.7032 28.9722 20.6593Z" fill="white" />
-        </svg>
-        <p className="ml-4 text-2xl font-bold tracking-wide text-white">Staking</p>
+        <Image src={"/logo.svg"} width={140} height={100} alt="logo" />
       </div>
 
       <div className="flex min-h-screen items-center justify-center">
         <div className="w-[400px] space-y-8">
           <div>
-            <svg width="45" height="42" viewBox="0 0 45 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect y="0.5" width="45" height="41" rx="6" fill="#48FF2C" />
-              <circle cx="22.5" cy="21" r="13.5" fill="black" />
-              <path d="M28.9722 20.6593L27.0405 20.1075C25.264 19.5996 23.8998 18.236 23.3919 16.4588L22.8401 14.5272C22.753 14.2233 22.2458 14.2233 22.1587 14.5272L21.6069 16.4588C21.0991 18.236 19.7348 19.6003 17.9583 20.1075L16.0267 20.6593C15.8744 20.7025 15.7695 20.842 15.7695 21C15.7695 21.1579 15.8744 21.2968 16.0267 21.3407L17.9583 21.8925C19.7348 22.4004 21.0991 23.7639 21.6069 25.5411L22.1587 27.4727C22.2026 27.625 22.3415 27.7299 22.4994 27.7299C22.6574 27.7299 22.7962 27.625 22.8401 27.4727L23.3919 25.5411C23.8998 23.7639 25.264 22.3996 27.0405 21.8925L28.9722 21.3407C29.1245 21.2975 29.2293 21.1579 29.2293 21C29.2293 20.842 29.1245 20.7032 28.9722 20.6593Z" fill="white" />
+          <svg
+              width="31"
+              height="29"
+              viewBox="0 0 21 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 0.870971C0 0.389947 0.389947 0 0.87097 0H5.22582C5.70684 0 6.09679 0.389947 6.09679 0.87097V5.22582C6.09679 5.70684 5.70684 6.09679 5.22582 6.09679H0.870971C0.389947 6.09679 0 5.70684 0 5.22582V0.870971Z"
+                fill="url(#paint0_linear_917_1056)"
+              />
+              <rect
+                x="7.84048"
+                width="6.09679"
+                height="6.09679"
+                rx="0.87097"
+                fill="url(#paint1_linear_917_1056)"
+              />
+              <rect
+                x="13.0674"
+                y="5.22552"
+                width="6.96776"
+                height="6.96776"
+                rx="0.87097"
+                fill="url(#paint2_linear_917_1056)"
+              />
+              <rect
+                x="6.96408"
+                y="11.3225"
+                width="6.96776"
+                height="6.96776"
+                rx="0.87097"
+                fill="url(#paint3_linear_917_1056)"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_917_1056"
+                  x1="3.0484"
+                  y1="0"
+                  x2="3.0484"
+                  y2="6.09679"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#28DF99" />
+                  <stop offset="0.5" stop-color="#3EDD25" />
+                  <stop offset="1" stop-color="#17540E" />
+                </linearGradient>
+                <linearGradient
+                  id="paint1_linear_917_1056"
+                  x1="10.8889"
+                  y1="0"
+                  x2="10.8889"
+                  y2="6.09679"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#28DF99" />
+                  <stop offset="0.5" stop-color="#3EDD25" />
+                  <stop offset="1" stop-color="#17540E" />
+                </linearGradient>
+                <linearGradient
+                  id="paint2_linear_917_1056"
+                  x1="16.5513"
+                  y1="5.22552"
+                  x2="16.5513"
+                  y2="12.1933"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#28DF99" />
+                  <stop offset="0.5" stop-color="#3EDD25" />
+                  <stop offset="1" stop-color="#17540E" />
+                </linearGradient>
+                <linearGradient
+                  id="paint3_linear_917_1056"
+                  x1="10.448"
+                  y1="11.3225"
+                  x2="10.448"
+                  y2="18.2903"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#28DF99" />
+                  <stop offset="0.5" stop-color="#3EDD25" />
+                  <stop offset="1" stop-color="#17540E" />
+                </linearGradient>
+              </defs>
             </svg>
             <h1 className="mb-1 mt-[20px] text-[20px] font-semibold tracking-wider text-white">Enter Verification Code</h1>
             <p className="text-[16px] text-[#525866]">We've sent a code to<span className="text-white"> {email} </span></p>
@@ -129,14 +205,14 @@ export default function VerifyForm() {
           <div className="mt-4">
             <Link href="/">
               <button className="w-full rounded-xl border border-gray-700 py-2 text-white">
-                Home Page
+                Go to Login Page
               </button>
             </Link>
           </div>
 
           <div className="text-center">
-            <p className="text-[14px] text-gray-500">Experiencing issues receiving the code?</p>
-            <a href="#" className="text-white underline">Resend code</a>
+            {/* <p className="text-[14px] text-gray-500">Experiencing issues receiving the code?</p>
+            <a href="#" className="text-white underline">Resend code</a> */}
           </div>
         </div>
       </div>
