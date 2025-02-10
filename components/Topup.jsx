@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from "react";
 import QRCodeModal from "./QRmodal";
 import { useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 
 const TopUp = ({drawer , setdrawer}) => {
@@ -29,7 +31,7 @@ const TopUp = ({drawer , setdrawer}) => {
         const data = await response.json();
         if (data.coins) {
           const formattedCoins = data.coins.map(coin => ({
-            _id: coin._id, // Include the coin ID
+            _id: coin._id, // Include the coin h
             name: coin.name,
             icon: coin.logoUrl,
             amount: '0.00',
@@ -132,7 +134,7 @@ const TopUp = ({drawer , setdrawer}) => {
         throw new Error(data.error || 'Something went wrong');
       }
 
-      toast.success('Topup submitted successfully');
+      toast('Topup submitted successfully');
       setdrawer(false);
       // Reset form
       setSelectedCoin(null);
@@ -140,7 +142,7 @@ const TopUp = ({drawer , setdrawer}) => {
       
     } catch (error) {
       console.error('Error submitting topup:', error);
-      toast.error(error.message || 'Failed to submit topup');
+      toast(error.message || 'Failed to submit topup');
     } finally {
       setIsSubmitting(false);
     }
@@ -179,8 +181,8 @@ const TopUp = ({drawer , setdrawer}) => {
         throw new Error(data.error || 'Something went wrong');
       }
 
-      toast.success('Topup submitted successfully');
-      setShowQRModal(false);
+      toast('Topup submitted successfully');
+      // setShowQRModal(false);
       setdrawer(false);
       // Reset form
       setSelectedCoin(null);
@@ -188,7 +190,7 @@ const TopUp = ({drawer , setdrawer}) => {
       
     } catch (error) {
       console.error('Error submitting topup:', error);
-      toast.error(error.message || 'Failed to submit topup');
+      toast(error.message || 'Failed to submit topup');
     } finally {
       setIsSubmitting(false);
     }
@@ -220,6 +222,7 @@ const TopUp = ({drawer , setdrawer}) => {
 
   return (
     <>
+   
     {/* 1st modal for choose coin */}
     <div className="fixed z-[999999] inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="w-[24rem] md:w-[30rem] rounded-lg   overflow-auto bg-white p-6 shadow-lg">
@@ -356,7 +359,7 @@ const TopUp = ({drawer , setdrawer}) => {
             {selectedCoin !== null && (
               <>
                 <img 
-                  src={`${process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || ''}/${coins[selectedCoin]?.icon}`} 
+                  src={`${coins[selectedCoin]?.icon}`} 
                   alt={coins[selectedCoin]?.name}
                   className="w-8 h-8 rounded-full"
                 />

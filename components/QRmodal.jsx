@@ -968,7 +968,7 @@ const QRCodeModal = () => {
         {/* Amount */}
         <div className="text-center mb-2">
           <p className="text-[#77849B] text-[14px] ">
-            Amount needs to be transferred:
+            Amount needs to be transferred:s
           </p>
           <p className="font-bold text-[18px] text-[black]">50.00 USDT</p>
         </div>

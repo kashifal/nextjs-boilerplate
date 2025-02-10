@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const Home = () => {
-    useAuth();
+    // useAuth();
   return (
     <>
     <div className="bg-[#10141B] text-white min-h-screen w-full">

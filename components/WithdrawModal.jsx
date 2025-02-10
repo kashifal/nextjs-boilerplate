@@ -273,7 +273,7 @@ const WithdrawModal = ({drawer , setdrawer}) => {
       const data = await response.json();
       console.log('API response data:', data);
 
-      if (!response.ok) {
+      if (!response.ok) {``
         throw new Error(data.error || 'Something went wrong');
       }
 

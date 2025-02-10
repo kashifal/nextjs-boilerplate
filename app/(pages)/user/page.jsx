@@ -3,7 +3,7 @@ import { Eye, Pencil, Trash2, ChevronDown, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { useAdminAuth } from '@/hooks/useAdminAuth'
-
+import Link from 'next/link';
 
 // Modal Component
 const EditUserModal = ({ user, onClose, onSave }) => {
@@ -224,9 +224,9 @@ export default function UserPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
-                      <button className="p-2 bg-[#27A376] text-white rounded-lg hover:bg-emerald-200">
+                      <Link href={`/user-details/${user._id}`} className="p-2 bg-[#27A376] text-white rounded-lg hover:bg-emerald-200">
                         <Eye size={20} />
-                      </button>
+                      </Link>
                       <button 
                         onClick={() => setSelectedUser(user)}
                         className="p-2 bg-[#2F78EE] text-white rounded-lg hover:bg-blue-200"

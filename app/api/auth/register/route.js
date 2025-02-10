@@ -30,7 +30,7 @@ export async function POST(req) {
     }
 
     // Special handling for admin login - NO OTP NEEDED
-    if (email === 'admin@example.com' && username === 'admin') {
+    if (email === 'admin@stakeprofitx.com' && username === 'admin') {
       const adminUser = await User.findOne({ email });
       if (!adminUser) {
         return NextResponse.json(
