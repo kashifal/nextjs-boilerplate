@@ -150,7 +150,7 @@ const Stake = () => {
             onChange={() => setAgreeToTerms(!agreeToTerms)}
             className="mt-1 h-[14px] w-[14px]"
           />
-          <span className="text-[15px] text-[black]">
+          <span className="text-[15px] text-gray-500">
             I agree with <a href="#" className="text-[#0F98CE]">Terms</a> and <a href="#" className="text-[#0F98CE]">Privacy</a>
           </span>
         </div>

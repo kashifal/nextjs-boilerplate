@@ -208,52 +208,29 @@ const WithdrawModal = ({drawer , setdrawer}) => {
 
   const handleWithdrawel = async () => {
     try {
-      // Add console logs for debugging
-      console.log('Starting withdrawal process...');
-      console.log('Selected coin:', selectedCoin);
-      console.log('Amount:', amount);
-      console.log('Wallet address:', walletAddress);
-
       // Validations
-      // if (!selectedCoin && selectedCoin !== 0) {  // Changed this check
-      //   console.log('no coin');
+      if (!selectedCoin && selectedCoin !== 0) {
+        toast.error('Please select a coin');
+        return;
+      }
 
-      //   return;
-      // }
+      if (!amount || isNaN(amount) || amount <= 0) {
+        toast.error('Please enter a valid amount');
+        return;
+      }
 
-      // if (!amount || isNaN(amount) || amount <= 0) {
-      //   console.log('no amount');
-      //   return;
-      // }
+      if (!walletAddress || walletAddress.trim() === '') {
+        toast.error('Please enter a valid wallet address');
+        return;
+      }
 
-      // if (!walletAddress) {
-      //   toast.error('Please enter a valid wallet address');
-      //   return;
-      // }
-
-      // const selectedCoinData = coins[selectedCoin];
-      // console.log('Selected coin data:', selectedCoinData);
-
-      // if (!selectedCoinData) {
-      //   console.log('no amount');
-
-      // }
-
-      // if (amount > availableBalance) {
-      //   console.log('amount exceeds available balance');
-      
-      // }
+      if (amount > availableBalance) {
+        toast.error('Amount exceeds available balance');
+        return;
+      }
 
       setIsSubmitting(true);
-
-      // console.log('Making API call with data:', {
-      //   amount: parseFloat(amount),
-      //   coinId: selectedCoinData._id,
-      //   user: JSON.parse(localStorage.getItem('user')).id,
-      //   walletAddress: 'walletAddress'
-      // });
       const selectedCoinData = coins[selectedCoin];
-
 
       const response = await fetch('/api/withdrawal', {
         method: 'POST',
@@ -264,16 +241,13 @@ const WithdrawModal = ({drawer , setdrawer}) => {
           amount: parseFloat(amount),
           coinId: selectedCoinData._id,
           user: JSON.parse(localStorage.getItem('user')).id,
-          walletAddress: 'jhgjhgjhghfgfdfgddgf'
+          walletAddress: walletAddress.trim()
         }),
       });
 
-      console.log('API response received:', response);
-
       const data = await response.json();
-      console.log('API response data:', data);
 
-      if (!response.ok) {``
+      if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
       }
 
@@ -431,6 +405,8 @@ const WithdrawModal = ({drawer , setdrawer}) => {
             <label className="block text-gray-700 text-sm text-gray-700 mb-2">Wallet address</label>
             <input 
               type="text" 
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
               placeholder="Enter wallet address"
               className="w-full p-3 border text-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
             />
