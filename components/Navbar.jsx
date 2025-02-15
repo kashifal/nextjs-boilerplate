@@ -4,18 +4,27 @@ import Link from "next/link";
 import NextImage from 'next/image'
 
 const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const links = [
-    { name: "Home", href: "/", isActive: true },
+    { name: "Home", href: "hero", isActive: true },
     {
       name: "Staking calculator",
-      href: "/staking-calculator",
+      href: "calculator",
       isActive: false,
     },
-    { name: "About us", href: "/about-us", isActive: false },
-    { name: "FAQ", href: "/faq", isActive: false },
+    { name: "About us", href: "about", isActive: false },
+    { name: "FAQ", href: "faq", isActive: false },
   ];
+
+  const handleScroll = (sectionId) => {
+    setIsDrawerOpen(false);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -23,22 +32,22 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="max-w-[1250px] px-4 mx-auto py-8 flex items-center justify-between gap-2">
-        <a href="/">
+      <nav className="max-w-[1250px] sticky top-0  px-4 mx-auto py-8 flex items-center justify-between gap-2">
+        <Link href="/home">
           <NextImage src={"/logo.svg"} width={140} height={100} alt="logo" />
-        </a>
+        </Link>
 
         <div className="xl:flex hidden items-center gap-6 xl:gap-[34px]">
           {links.map((link, index) => (
-            <a
+            <button
               key={link.name}
-              href={link.href}
+              onClick={() => handleScroll(link.href)}
               className={`font-medium hover:text-white ${
                 index === 0 ? "text-white" : "text-[#71798A]"
               }`}
             >
               {link.name}
-            </a>
+            </button>
           ))}
         </div>
 
@@ -97,15 +106,15 @@ const Navbar = () => {
           </svg>
         </div>
         {links.map((link, index) => (
-          <a
+          <button
             key={link.name}
-            href={link.href}
-            className={`font-medium text-xl  hover:text-white ${
+            onClick={() => handleScroll(link.href)}
+            className={`font-medium text-xl hover:text-white ${
               index === 0 ? "text-white" : "text-[#71798A]"
             }`}
           >
             {link.name}
-          </a>
+          </button>
         ))}
 
         <div className="flex sm:hidden flex-col w-full mt-10 gap-4">

@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
  
 import NextImage from "next/image";
  
@@ -9,14 +10,7 @@ const OtherNavbar = () => {
   const [user, setUser] = useState(null);
 
   const links = [
-    { name: "Home", href: "/", isActive: true },
-    {
-      name: "Staking calculator",
-      href: "/staking-calculator",
-      isActive: false,
-    },
-    { name: "About us", href: "/about-us", isActive: false },
-    { name: "FAQ", href: "/faq", isActive: false },
+    
   ];
 
   const toggleDrawer = () => {
@@ -36,9 +30,11 @@ const OtherNavbar = () => {
   return (
     <>
       <nav className="max-w-[1250px] sticky top-0 z-50 bg-[#10141B] px-4 mx-auto py-8 flex items-center justify-between gap-2">
-        <a href="/">
-          <NextImage src={'/logo.svg'} width={142} height={42} alt="logo" />
-        </a>
+        <Link href="/home">
+      
+            <NextImage src={'/logo.svg'} width={142} height={42} alt="logo" />
+        
+        </Link>
 
         <div className="xl:flex hidden items-center gap-6 xl:gap-[34px]">
           {links.map((link, index) => (

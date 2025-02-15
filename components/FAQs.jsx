@@ -37,7 +37,7 @@ const FAQs = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div id="#faq" className="max-w-7xl mx-auto px-4 py-6">
       <h1 className="sm:text-[42px] text-3xl font-[700]">FAQ</h1>
       <div className="max-w-[914px] mt-10">
         {faqData.map((faq ,idx) => (

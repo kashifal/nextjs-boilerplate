@@ -2,7 +2,7 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="max-w-[850px] mx-auto px-4 py-24 flex flex-col items-center text-center">
+    <div id="/" className="max-w-[850px] mx-auto px-4 py-24 flex flex-col items-center text-center">
       <h1 className="lg:text-[74px] text-[34px] sm:text-5xl font-[700] leading-tight lg:leading-[76px]">
         The simplest way <br className="sm:block hidden" />to{" "}
         <span className="text-[#48FF2C] inline-block">earn interest</span> on

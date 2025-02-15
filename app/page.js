@@ -3,6 +3,7 @@ import { Suspense, useEffect } from 'react';
 import RegisterForm from "@/components/auth/RegisterForm"
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+ 
 import './globals.css'
 
 export default function Home() {

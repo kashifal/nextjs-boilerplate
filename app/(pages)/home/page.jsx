@@ -8,7 +8,7 @@ import Networks from "@/components/Networks";
 import FAQs from "@/components/FAQs";
 import Earning from "@/components/Earning";
 import Footer from "@/components/Footer";
-import { useAuth } from "@/hooks/useAuth";
+ 
 
 const Home = () => {
     // useAuth();
@@ -16,12 +16,20 @@ const Home = () => {
     <>
     <div className="bg-[#10141B] text-white min-h-screen w-full">
       <Navbar />
-      <Hero />
+      <div id="hero">
+        <Hero />
+      </div>
       <StackingWorks />
-      <Earning />
-      <CorePrinciples />
+      <div id="calculator">
+        <Earning />
+      </div>
+      <div id="core-principles">
+        <CorePrinciples />
+      </div>
       <Networks />
-      <FAQs />
+      <div id="faq">
+        <FAQs />
+      </div>
       <Footer />
       </div>
     </>
