@@ -64,7 +64,7 @@ const Referrals = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {referrals.map((referral) => (
+                {referrals?.map((referral) => (
                   <tr key={referral._id}>
                     <td className="px-6 py-4">{referral.referrer.email}</td>
                     <td className="px-6 py-4">{referral.referred.email}</td>

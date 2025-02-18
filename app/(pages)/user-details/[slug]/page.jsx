@@ -135,13 +135,14 @@ export default function Page() {
                 <div key={coinType} className="space-y-4">
                       {/* <pre>{JSON.stringify(stakings, null, 2)}</pre> */}
                     <h2 className="text-2xl font-bold">{coinType}</h2>
+                    {/* <pre>{JSON.stringify(stakings, null, 2)}</pre> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {stakings.map((staking, index) => (
                             <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-10 h-10  rounded-full flex items-center justify-center">
                                         <span className=" text-xl">
-                                            <Image src={staking?.coinName?.logoUrl} alt={staking.coinName.symbol} width={32} height={32} />
+                                            <Image src={staking?.coinName?.logoUrl} alt={staking?.coinName?.logoUrl} width={32} height={32} />
                                         </span>
                                     </div>
                                     <div>

@@ -50,12 +50,12 @@ export default function DashboardLayout({ children }) {
     <div className="bg-[#10141B]">
       <OtherNavbar />
       <div className="max-w-7xl px-4 mx-auto">
-        <div className="lg:w-[60%] mt-7 flex items-center gap-4">
+        <div className="lg:w-[60%] mt-7 flex overflow-x-auto items-center gap-4">
           {tabs.map((tab) => (
             <Link
               key={tab.id}
               href={tab.path}
-              className={`rounded-[12px] cursor-pointer px-4 py-3 flex items-center gap-2.5 transition-all duration-300 ease-in-out
+              className={`rounded-[12px] min-w-[200px] cursor-pointer px-4 py-3 flex items-center gap-2.5 transition-all duration-300 ease-in-out
         ${
           pathname.includes(tab.path)
             ? "bg-[#1D2431] text-white w-[30%]"

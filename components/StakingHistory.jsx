@@ -111,8 +111,9 @@ const StakingHistory = () => {
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       {/* <pre>{JSON.stringify(foundUser, null, 2)}</pre> */}
-      <h1 className="text-2xl font-bold">Balances</h1>
-      <div className="grid grid-cols-4 gap-5 pb-16 pt-8">
+      {/* <h1 className="text-2xl font-bold">Balances</h1> */}
+
+      {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-5 pb-16 pt-8">
         {foundUser?.balances?.byCoin && Object.entries(foundUser.balances.byCoin).map(([symbol, coinData]) => (
           <div key={symbol} className="bg-gray-700 p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-6">
@@ -131,18 +132,18 @@ const StakingHistory = () => {
                   </div>
                 )}
                 <span className="font-semibold">{coinData.name || symbol}</span>
-              </div>
+              </div> */}
               {/* <button>
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
               </button> */}
-            </div>
+            {/* </div>
             <p className="text-gray-500 mb-2">Balance</p>
             <p className="text-2xl font-semibold">{coinData.amount} {symbol}</p>
           </div>
         ))}
-      </div>
+      </div> */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Stakings</h2>
         {/* <pre>{JSON.stringify(foundUser, null, 2)}</pre> */}
@@ -187,7 +188,7 @@ const StakingHistory = () => {
             stakingGroups.map((group) => (
               <div key={group.coinName}>
                 {/* <pre>{JSON.stringify(stakingGroups, null, 2)}</pre> */}
-                <h1 className="font-[700] text-[24px] pt-3 sm:text-[20px]">
+                <h1 className="font-[700] text-[24px] pt-3 sm:text-[32px] text-emerald-500 underline">
                   {" "}
                   {group.coinName} - Total Staked:{" "}
                   {group.totalStaked.toFixed(0)} {group.coinName} (
@@ -199,7 +200,7 @@ const StakingHistory = () => {
                     ({group.totalProfitUSDT.toFixed(1)} USDT)
                   </span>
                 </p> */}
-                <div className="mt-4 grid grid-cols-3 gap-5">
+                <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
                   {group.stakes.map(
                     ({
                       amount,
@@ -279,12 +280,22 @@ const StakingHistory = () => {
                               </div>
                             </div>
                             <div>
-                              <h1 className="font-medium text-sm">Earned:</h1>
+                            <div>
+                            <h1 className="font-medium text-sm">
+                              Today's Earning:
+                            </h1>
+                            <div className="flex gap-1.5 text-sm text-white">
+                              <p className="text-[#48FF2C]">
+                                +{todayProfitUSDT} USDT
+                              </p>
+                            </div>
+                          </div>
+                              {/* <h1 className="font-medium text-sm">Earned:</h1>
                               <div className="flex gap-1.5 text-sm text-white">
                                 <p className="text-[#48FF2C]">
                                   +{totalProfitUSDT.toFixed(1)} USDT
                                 </p>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                           <div className="py-5">
@@ -304,16 +315,7 @@ const StakingHistory = () => {
                             {/* */}
                             {/* */} {remainingDays} days
                           </div>
-                          <div>
-                            <h1 className="font-medium text-sm">
-                              Today's Earning:
-                            </h1>
-                            <div className="flex gap-1.5 text-sm text-white">
-                              <p className="text-[#48FF2C]">
-                                +{todayProfitUSDT} USDT
-                              </p>
-                            </div>
-                          </div>
+                         
                         </div>
                       );
                     }

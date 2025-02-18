@@ -348,13 +348,13 @@ const StakingAssets = ({stats}) => {
       {/* Table Section */}
       <div className="bg-white rounded-xl">
         {/* Table Header */}
-        <div className="grid grid-cols-6 p-4 border-b bg-[#F9F9FC]">
+        <div className="grid grid-cols-3 md:grid-cols-6 p-4 border-b bg-[#F9F9FC]">
           <div className="col-span-1">User</div>
-          <div className="col-span-1">Date</div>
+          <div className="col-span-1 md:flex hidden">Date</div>
           <div className="col-span-1">Coin</div>
           <div className="col-span-1">Top up amount</div>
           <div className="col-span-1">Status</div>
-          <div className="col-span-1">Info</div>
+          <div className="col-span-1 md:flex hidden">Info</div>
         </div>
 
         {/* Table Rows */}
@@ -396,10 +396,10 @@ const StakingAssets = ({stats}) => {
                     <div>
                   
                       <p className="font-medium">{getUserById(user)}</p>
-                      <p className="text-sm text-gray-500">{getDate(createdAt)}</p>
+                      <p className="text-sm text-gray-500 md:flex hidden">{getDate(createdAt)}</p>
                     </div>
                   </div>
-                  <div className="col-span-1">{getDate(createdAt)}</div>
+                  <div className="col-span-1 md:flex hidden">{getDate(createdAt)}</div>
                   <div className="col-span-1 text-gray-800">{getCoinById(coin)?.name}</div>
                   <div className="col-span-1 font-semibold text-orange-500">{amount} {getCoinById(coin)?.name}</div>
                   <div onClick={() => open({ coin, status, amount, user, _id, createdAt })} className="col-span-1 flex border px-2 items-center w-[160px] py-1 rounded-lg">
@@ -433,7 +433,7 @@ const StakingAssets = ({stats}) => {
                   {status}
                 </span>
               </div>
-              <div className="col-span-1">
+              <div className="col-span-1 md:flex hidden">
                 <button onClick={() => toggleRowInfo(_id)} className="text-gray-400 hover:text-gray-600">
                   {hideInfo.includes(_id) ? (
                     <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
