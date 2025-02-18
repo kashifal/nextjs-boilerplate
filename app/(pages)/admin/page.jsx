@@ -9,7 +9,7 @@ import WithdrawalList from '@/components/WithdrawalList'
 
 const Admin = () => {
   // This will automatically redirect non-admin users
-  useAdminAuth();
+  // useAdminAuth();
 
   const [stats, setStats] = useState({
     totalUsers: 0,
