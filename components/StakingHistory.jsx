@@ -110,6 +110,7 @@ const StakingHistory = () => {
 
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
+      {/* <pre>{JSON.stringify(foundUser, null, 2)}</pre> */}
       <h1 className="text-2xl font-bold">Balances</h1>
       <div className="grid grid-cols-4 gap-5 pb-16 pt-8">
         {foundUser?.balances?.byCoin && Object.entries(foundUser.balances.byCoin).map(([symbol, coinData]) => (

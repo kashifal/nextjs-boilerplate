@@ -1,6 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { showToast } from 'react-next-toast';
+
 
 const WithdrawalList = () => {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -46,6 +49,10 @@ const WithdrawalList = () => {
     } finally {
       setProcessingId(null);
     }
+  };
+
+  const handleCopy = () => {
+    showToast.success('Copied to clipboard')
   };
 
   useEffect(() => {
@@ -109,10 +116,35 @@ const WithdrawalList = () => {
                     {withdrawal?.amount || '0'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {withdrawal?.walletAddress ? 
-                      `${withdrawal.walletAddress.slice(0, 10)}...` : 
-                      'N/A'
-                    }
+                    {withdrawal?.walletAddress ? (
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono">{withdrawal.walletAddress}</span>
+                        <CopyToClipboard 
+                          text={withdrawal.walletAddress}
+                          onCopy={handleCopy}
+                        >
+                          <button
+                            className="p-1 hover:bg-gray-100 rounded-full"
+                            title="Copy wallet address"
+                          >
+                            <svg
+                              className="w-4 h-4 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </button>
+                        </CopyToClipboard>
+                      </div>
+                    ) : 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 rounded-full text-xs ${
