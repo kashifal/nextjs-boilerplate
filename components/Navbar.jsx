@@ -32,7 +32,8 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="max-w-[1250px] sticky top-0  px-4 mx-auto py-8 flex items-center justify-between gap-2">
+    <div className="pt-2 sticky top-0  z-[999999999]">
+      <nav className="max-w-[1250px] bg-[#10141B] rounded-3xl px-4 mx-auto py-6 flex items-center justify-between gap-2">
         <Link href="/home">
           <NextImage src={"/logo.svg"} width={140} height={100} alt="logo" />
         </Link>
@@ -82,12 +83,13 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+      </div>
 
       {/* drawer */}
       <div
         className={`flex flex-col transform ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out h-screen justify-center sm:px-6 py-8 px-4 w-full sm:w-1/2 fixed top-0 left-0 bg-[#0c0f14]  gap-6 xl:gap-[34px]`}
+        } transition-transform z-[9999999999999] duration-300 ease-in-out h-screen justify-center sm:px-6 py-8 px-4 w-full sm:w-1/2 fixed top-0 left-0 bg-[#0c0f14]  gap-6 xl:gap-[34px]`}
       >
         <div onClick={toggleDrawer} className="absolute cursor-pointer top-5 right-4">
           <svg
