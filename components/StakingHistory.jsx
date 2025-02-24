@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
+import CoinByLogo from "./CoinByLogo";
 const StakingHistory = () => {
   const [stakingGroups, setStakingGroups] = useState([]);
   const [totalStakedUSDT, setTotalStakedUSDT] = useState(0);
@@ -144,6 +144,8 @@ const StakingHistory = () => {
           </div>
         ))}
       </div> */}
+
+      <CoinByLogo />
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Stakings</h2>
         {/* <pre>{JSON.stringify(foundUser, null, 2)}</pre> */}

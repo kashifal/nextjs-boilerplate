@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }) {
     <div className="bg-[#10141B]">
       <OtherNavbar />
       <div className="max-w-7xl px-4 mx-auto">
-        <div className="lg:w-[60%] mt-7 flex overflow-x-auto items-center gap-4">
+        <div className="lg:w-[60%] mt-7 flex md:overflow-hidden overflow-x-auto items-center gap-4">
           {tabs.map((tab) => (
             <Link
               key={tab.id}

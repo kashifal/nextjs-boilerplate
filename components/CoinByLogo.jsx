@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export default function TestPage() {
+export default function CoinByLogo() {
   const [topupSummary, setTopupSummary] = useState([]);
 
   useEffect(() => { 
@@ -51,10 +51,10 @@ export default function TestPage() {
   }, []);
 
   return (
-    <div className=' p-4'>
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+    <div className='my-12'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
         {topupSummary.map((item, index) => (
-          <div key={index} className="bg-black rounded-xl p-4">
+          <div key={index} className="bg-[#1c1c1e] rounded-xl p-4">
             <div className="flex items-center gap-3 mb-3">
               {item.coinLogo && (
                 <img 
@@ -77,3 +77,5 @@ export default function TestPage() {
     </div>
   );
 }
+
+ 
