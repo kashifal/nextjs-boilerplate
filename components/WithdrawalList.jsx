@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { toast } from 'react-hot-toast'; 
 import { showToast } from 'react-next-toast';
 
 
@@ -51,8 +50,8 @@ const WithdrawalList = () => {
     }
   };
 
-  const handleCopy = () => {
-    showToast.success('Copied to clipboard')
+  const handleCopy = (e) => {
+    navigator.clipboard.writeText(e)
   };
 
   useEffect(() => {
@@ -119,11 +118,9 @@ const WithdrawalList = () => {
                     {withdrawal?.walletAddress ? (
                       <div className="flex items-center space-x-2">
                         <span className="font-mono">{withdrawal.walletAddress}</span>
-                        <CopyToClipboard 
-                          text={withdrawal.walletAddress}
-                          onCopy={handleCopy}
-                        >
+                         
                           <button
+                          onClick={() => handleCopy(withdrawal.walletAddress)}
                             className="p-1 hover:bg-gray-100 rounded-full"
                             title="Copy wallet address"
                           >
@@ -142,7 +139,7 @@ const WithdrawalList = () => {
                               />
                             </svg>
                           </button>
-                        </CopyToClipboard>
+                   
                       </div>
                     ) : 'N/A'}
                   </td>
