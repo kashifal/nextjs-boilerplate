@@ -3,9 +3,12 @@ import { Suspense } from "react";
 import React, { useEffect, useState } from "react";
 import OtherNavbar from "@/components/OtherNavbar";
 import Footer from "@/components/Footer";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
+
 import { useRouter } from "next/navigation";
 
 export default function ReferralsPage() {
+  useAdminAuth(false);
   return (
     <Suspense
       fallback={
