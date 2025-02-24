@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Staking from '@/models/staking';
+import Topup from '@/models/topup';
 
 export async function POST() {
   try {
@@ -28,10 +29,22 @@ export async function POST() {
 
       // Check if staking period is complete
       if (today >= staking.endDate) {
-        staking.status = 'COMPLETED';
-      }
+        // Calculate total profit
+        const totalProfit = staking.dailyProfits.reduce((sum, dp) => sum + dp.profit, 0);
+        
+        // Create new topup with the total profit amount
+        await Topup.create({
+          user: staking.user,
+          amount: totalProfit,
+          coin: staking.coin,
+          status: 'APPROVED'
+        });
 
-      await staking.save();
+        // Delete the completed staking
+        await Staking.findByIdAndDelete(staking._id);
+      } else {
+        await staking.save();
+      }
     }
 
     return NextResponse.json({ 
