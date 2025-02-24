@@ -9,6 +9,7 @@ import Image from 'next/image';
 export default function VerifyForm() {
   const [otp, setOtp] = useState('');
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function VerifyForm() {
     const combinedOtp = otp.split('').join('');
     
     try {
+      setIsLoading(true);
       const res = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: {
@@ -38,10 +40,12 @@ export default function VerifyForm() {
       const data = await res.json();
       
       if (res.ok) {
+        setIsLoading(false);
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         router.push('/dashboard');
       } else {
+        setIsLoading(false);
         const errorMessage = data.error || 
           (res.status === 401 ? 'Invalid verification code' :
            res.status === 404 ? 'Email not found' :
@@ -49,6 +53,7 @@ export default function VerifyForm() {
         setError(errorMessage);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error('Verification request failed:', error);
       setError('Network error. Please check your connection and try again.');
     }
@@ -196,9 +201,10 @@ export default function VerifyForm() {
 
             <button
               type="submit"
+              disabled={isLoading}
               className="mt-8 w-full rounded-xl bg-[#48FF2C] py-2 font-semibold text-black hover:bg-green-500"
             >
-              Verify
+              {isLoading ? 'Verifying...' : 'Verify'}
             </button>
           </form>
 

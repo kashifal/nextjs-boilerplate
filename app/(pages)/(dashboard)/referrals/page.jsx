@@ -8,7 +8,7 @@ import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useRouter } from "next/navigation";
 
 export default function ReferralsPage() {
-  useAdminAuth(false);
+ 
   return (
     <Suspense
       fallback={
@@ -46,7 +46,7 @@ function ReferralsPageContent() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          router.push("/");
+          router.push("/referrals");
           return;
         }
         throw new Error("Failed to fetch referrals");
