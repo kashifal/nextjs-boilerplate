@@ -149,11 +149,7 @@ const Usdt = ({ stats }) => {
                                 </svg>
                                 </span></h3>
                                 <p className="text-[32px] font-[600] mt-1">{stats.totalProfitUSDT.toFixed(2)} USDT</p>
-                                <p className="text-[#83BF6E] bg-[#FCFCFC] rounded-[4px] p-1 max-w-[142px]  font-medium text-[12px] flex gap-1 items-center mt-2"> <span><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1 6L6 1L11 6" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        <path d="M6 13V1" stroke="#83BF6E" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-                                </span>  </p>
+                               
                         </div>
 
                         <div className="  flex flex-col md:border-r-2 border-gray-200 lg:mr-5 lg:ml-6 ">
@@ -170,12 +166,7 @@ const Usdt = ({ stats }) => {
                                 </svg>
                                 </span></h3>
                                 <p className="text-[32px] font-[600] mt-1">{stats.totalStakedUSDT.toFixed(2)} USDT</p>
-                                <p className="text-[#FF6A55] bg-[#FCFCFC] rounded-[4px] p-1 max-w-[142px] font-medium text-[12px] flex gap-1 items-center mt-2"> <span><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11 8L6 13L1 8" stroke="#FF6A55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        <path d="M6 0.999999L6 13" stroke="#FF6A55" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-
-                                </span>  </p>
+                                
                         </div>
 
                         <div className="  flex flex-col  lg:mr-5 lg:ml-6 ">
