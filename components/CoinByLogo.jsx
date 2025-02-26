@@ -69,7 +69,7 @@ export default function CoinByLogo() {
             </div>
             <div className="text-gray-400 text-sm">Balance</div>
             <div className="text-white text-2xl font-semibold">
-              {item.totalAmount} {item.symbol}
+            {item.totalAmount.toFixed(3)} {item.symbol}
             </div>
           </div>
         ))}
