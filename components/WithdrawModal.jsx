@@ -453,7 +453,7 @@ const WithdrawModal = ({drawer , setdrawer}) => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Withdrawal amount:</span>
-                <span className="text-gray-700">52 USDT</span>
+                <span className="text-gray-700">{amount} {coins[selectedCoin]?.symbol}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Commission:</span>
@@ -461,7 +461,7 @@ const WithdrawModal = ({drawer , setdrawer}) => {
               </div>
               <div className="flex justify-between font-medium">
                 <span className="text-gray-500">Total withdrawal:</span>
-                <span className="text-yellow-500">50.00 USDT</span>
+                <span className="text-yellow-500">{amount - (amount * 0.02)} {coins[selectedCoin]?.symbol}</span>
               </div>
             </div>
           </div>
