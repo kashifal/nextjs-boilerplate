@@ -39,16 +39,29 @@ export async function GET() {
           usdtRate = processedCoins.get(coinName);
         } else {
           try {
+            // Try SWAP market first
+            const swapSymbol = `${coinName.toUpperCase()}-USDT-SWAP`;
             const response = await axios({
               method: 'get',
-              url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
-              headers: {
-                'Accept': 'text/plain',
-                'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
-              },
-              timeout: 5000
+              url: `https://www.okx.com/api/v5/market/ticker?instId=${swapSymbol}`,
             });
-            usdtRate = response.data.rate;
+
+            if (response.data.data && response.data.data[0]) {
+              usdtRate = parseFloat(response.data.data[0].last);
+            } else {
+              // Try spot market as fallback
+              const spotSymbol = `${coinName.toUpperCase()}-USDT`;
+              const spotResponse = await axios({
+                method: 'get',
+                url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+              });
+
+              if (spotResponse.data.data && spotResponse.data.data[0]) {
+                usdtRate = parseFloat(spotResponse.data.data[0].last);
+              } else {
+                throw new Error(`No price data found for ${coinName}`);
+              }
+            }
             processedCoins.set(coinName, usdtRate);
           } catch (apiError) {
             apiErrorCount++;

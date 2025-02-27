@@ -12,9 +12,6 @@ const Usdt = ({ stats }) => {
 
         const fetchTopups = async () => {
                 try {
-                        const user = JSON.parse(localStorage.getItem('user'));
-                        // if (!user?.id) return;
-
                         const response = await fetch(`/api/topup`);
                         if (!response.ok) throw new Error('Failed to fetch topups');
 
@@ -51,19 +48,33 @@ const Usdt = ({ stats }) => {
                                 }
 
                                 try {
+                                        // Try SWAP market first
+                                        const swapSymbol = `${coin.name.toUpperCase()}-USDT-SWAP`;
                                         const response = await axios({
                                                 method: 'get',
-                                                url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
-                                                headers: {
-                                                        'Accept': 'text/plain',
-                                                        'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
-                                                }
+                                                url: `https://www.okx.com/api/v5/market/ticker?instId=${swapSymbol}`,
                                         });
 
-                                        const rate = response.data.rate;
-                                        const usdtValue = topup.amount * rate;
-                                        total += usdtValue;
-                                        console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT`);
+                                        if (response.data.data && response.data.data[0]) {
+                                                const rate = parseFloat(response.data.data[0].last);
+                                                const usdtValue = topup.amount * rate;
+                                                total += usdtValue;
+                                                console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT`);
+                                        } else {
+                                                // Try spot market as fallback
+                                                const spotSymbol = `${coin.name.toUpperCase()}-USDT`;
+                                                const spotResponse = await axios({
+                                                        method: 'get',
+                                                        url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+                                                });
+
+                                                if (spotResponse.data.data && spotResponse.data.data[0]) {
+                                                        const rate = parseFloat(spotResponse.data.data[0].last);
+                                                        const usdtValue = topup.amount * rate;
+                                                        total += usdtValue;
+                                                        console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT (spot)`);
+                                                }
+                                        }
                                 } catch (error) {
                                         console.error(`Error fetching rate for ${coin.name}:`, error);
                                         continue;
@@ -87,17 +98,27 @@ const Usdt = ({ stats }) => {
 
         const getAllCoinRatesAgainstUsdt = async (coinSymbol) => {
                 try {
+                        // Try SWAP market first
+                        const swapSymbol = `${coinSymbol}-USDT-SWAP`;
                         const response = await axios({
                                 method: 'get',
-                                url: `https://rest.coinapi.io/v1/exchangerate/${coinSymbol}/USDT`,
-                                headers: {
-                                        'Accept': 'text/plain',
-                                        'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
-                                }
+                                url: `https://www.okx.com/api/v5/market/ticker?instId=${swapSymbol}`,
                         });
-                        
-                        setCoinRate(response.data);
-                        console.log(response.data,'data');
+
+                        if (response.data.data && response.data.data[0]) {
+                                setCoinRate(response.data.data[0]);
+                        } else {
+                                // Try spot market as fallback
+                                const spotSymbol = `${coinSymbol}-USDT`;
+                                const spotResponse = await axios({
+                                        method: 'get',
+                                        url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+                                });
+
+                                if (spotResponse.data.data && spotResponse.data.data[0]) {
+                                        setCoinRate(spotResponse.data.data[0]);
+                                }
+                        }
                 } catch (error) {
                         console.error('Error fetching coin rates:', error);
                 }

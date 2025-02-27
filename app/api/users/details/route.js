@@ -30,6 +30,48 @@ export async function GET() {
             return acc;
         }, {});
 
+        // Cache for exchange rates to minimize API calls
+        const rateCache = new Map();
+
+        async function getUSDTRate(coinSymbol) {
+            if (coinSymbol === 'USDT') return 1;
+            if (rateCache.has(coinSymbol)) return rateCache.get(coinSymbol);
+
+            try {
+                // Try SWAP market first
+                const swapSymbol = `${coinSymbol}-USDT-SWAP`;
+                const response = await axios({
+                    method: 'get',
+                    url: `https://www.okx.com/api/v5/market/ticker?instId=${swapSymbol}`,
+                });
+
+                if (response.data.data && response.data.data[0]) {
+                    const rate = parseFloat(response.data.data[0].last);
+                    rateCache.set(coinSymbol, rate);
+                    return rate;
+                }
+
+                // Try spot market as fallback
+                const spotSymbol = `${coinSymbol}-USDT`;
+                const spotResponse = await axios({
+                    method: 'get',
+                    url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+                });
+
+                if (spotResponse.data.data && spotResponse.data.data[0]) {
+                    const rate = parseFloat(spotResponse.data.data[0].last);
+                    rateCache.set(coinSymbol, rate);
+                    return rate;
+                }
+
+                console.error(`No price data found for ${coinSymbol}`);
+                return 1; // Fallback rate
+            } catch (error) {
+                console.error(`Error fetching rate for ${coinSymbol}:`, error.message);
+                return 1; // Fallback rate
+            }
+        }
+
         // Get detailed information for each user
         const usersWithDetails = await Promise.all(users.map(async (user) => {
             // Get user's stakings
@@ -81,52 +123,16 @@ export async function GET() {
 
             // Convert each coin balance to USDT
             await Promise.all(Object.entries(coinBalances).map(async ([symbol, amount]) => {
-                try {
-                    if (symbol === 'USDT') {
-                        totalBalanceUSDT += amount;
-                    } else {
-                        const response = await axios({
-                            method: "get",
-                            url: `https://rest.coinapi.io/v1/exchangerate/${symbol}/USDT`,
-                            headers: {
-                                Accept: "text/plain",
-                                "X-CoinAPI-Key": process.env.NEXT_PUBLIC_COINAPI_KEY,
-                            },
-                        });
-                        
-                        const rate = response.data.rate;
-                        totalBalanceUSDT += amount * rate;
-                    }
-                } catch (error) {
-                    console.error(`Error fetching exchange rate for ${symbol}:`, error);
-                    // If we can't get the rate, we'll skip this coin in the total
-                }
+                const rate = await getUSDTRate(symbol);
+                totalBalanceUSDT += amount * rate;
             }));
 
             // Calculate total staked amount in USDT
             let totalStaked = 0;
             await Promise.all(stakings.map(async (stake) => {
                 if (stake.status === 'ACTIVE') {
-                    try {
-                        if (stake.coin.symbol === 'USDT') {
-                            totalStaked += stake.amount;
-                        } else {
-                            const response = await axios({
-                                method: "get",
-                                url: `https://rest.coinapi.io/v1/exchangerate/${stake.coin.symbol}/USDT`,
-                                headers: {
-                                    Accept: "text/plain",
-                                    "X-CoinAPI-Key": process.env.NEXT_PUBLIC_COINAPI_KEY,
-                                },
-                            });
-                            
-                            const rate = response.data.rate;
-                            totalStaked += stake.amount * rate;
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching exchange rate for staked ${stake.coin.symbol}:`, error);
-                        // If we can't get the rate, we'll skip this stake in the total
-                    }
+                    const rate = await getUSDTRate(stake.coin.symbol);
+                    totalStaked += stake.amount * rate;
                 }
             }));
 

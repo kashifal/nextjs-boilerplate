@@ -113,12 +113,11 @@ export async function GET(request) {
 
     console.log('Fetching stakings for userId:', userId);
 
-    // Fetch all stakings for the user with populated coin data
     const stakings = await Staking.find({ user: userId })
       .populate('coin')
-      .lean(); // Use lean() for better performance
+      .lean();
 
-    console.log('Found raw stakings:', stakings); // Debug log
+    console.log('Found raw stakings:', stakings);
 
     if (!stakings || stakings.length === 0) {
       console.log('No stakings found for user');
@@ -140,19 +139,38 @@ export async function GET(request) {
         }
 
         const coinName = staking.coin.name;
-        console.log('Processing staking for coin:', coinName, staking); // Debug log
+        console.log('Processing staking for coin:', coinName, staking);
 
-        // Get USDT rate for the coin
-        const response = await axios({
-          method: 'get',
-          url: `https://rest.coinapi.io/v1/exchangerate/${coinName}/USDT`,
-          headers: {
-            'Accept': 'text/plain',
-            'X-CoinAPI-Key': process.env.NEXT_PUBLIC_COINAPI_KEY
+        // Try SWAP market first, then fall back to spot if needed
+        let usdtRate;
+        try {
+          const swapSymbol = `${coinName.toUpperCase()}-USDT-SWAP`;
+          const response = await axios({
+            method: 'get',
+            url: `https://www.okx.com/api/v5/market/ticker?instId=${swapSymbol}`,
+          });
+
+          if (response.data.data && response.data.data[0]) {
+            usdtRate = parseFloat(response.data.data[0].last);
+          } else {
+            // Try spot market as fallback
+            const spotSymbol = `${coinName.toUpperCase()}-USDT`;
+            const spotResponse = await axios({
+              method: 'get',
+              url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+            });
+
+            if (spotResponse.data.data && spotResponse.data.data[0]) {
+              usdtRate = parseFloat(spotResponse.data.data[0].last);
+            } else {
+              throw new Error(`No price data found for ${coinName}`);
+            }
           }
-        });
+        } catch (error) {
+          console.error(`Error fetching rate for ${coinName}:`, error.message);
+          continue;
+        }
 
-        const usdtRate = response.data.rate;
         const stakedUSDT = staking.amount * usdtRate;
         totalStakedUSDT += stakedUSDT;
 
@@ -195,7 +213,7 @@ export async function GET(request) {
           createdAt: staking.createdAt
         });
 
-        console.log(`Updated group for ${coinName}:`, groupedStakings[coinName]); // Debug log
+        console.log(`Updated group for ${coinName}:`, groupedStakings[coinName]);
 
       } catch (error) {
         console.error(`Error processing staking:`, error);

@@ -327,26 +327,49 @@ const StackingBanner = () => {
         }
 
         try {
+          // Format the symbol correctly for OKX API
+          // Convert symbols like "BTC" or "ETH" to "BTC-USDT-SWAP"
+          const formattedSymbol = `${coin.name.toUpperCase()}-USDT-SWAP`;
+          
           const response = await axios({
-            method: "get",
-            url: `https://rest.coinapi.io/v1/exchangerate/${coin.name}/USDT`,
-            headers: {
-              Accept: "text/plain",
-              "X-CoinAPI-Key": process.env.NEXT_PUBLIC_COINAPI_KEY,
-            },
+            method: 'get',
+            url: `https://www.okx.com/api/v5/market/ticker?instId=${formattedSymbol}`,
           });
 
-          const rate = response.data.rate;
-          const usdtValue = topup.amount * rate;
-          total += usdtValue;
-          console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT`);
+          // console.log(response, "response");
+          // return;
+          if (response.data.data && response.data.data[0]) {
+            const rate = parseFloat(response.data.data[0].last);
+            const usdtValue = topup.amount * rate;
+            total += usdtValue;
+            console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT (rate: ${rate})`);
+          } else {
+            console.log(`No price data found for ${formattedSymbol}`);
+          }
         } catch (error) {
-          console.error(`Error fetching rate for ${coin.name}:`, error);
-          continue;
+          console.error(`Error fetching rate for ${coin.name}:`, error.message);
+          // Try spot market as fallback
+          try {
+            const spotSymbol = `${coin.name.toUpperCase()}-USDT`;
+            const spotResponse = await axios({
+              method: 'get',
+              url: `https://www.okx.com/api/v5/market/ticker?instId=${spotSymbol}`,
+            });
+
+            if (spotResponse.data.data && spotResponse.data.data[0]) {
+              const rate = parseFloat(spotResponse.data.data[0].last);
+              const usdtValue = topup.amount * rate;
+              total += usdtValue;
+              console.log(`Calculated value for ${coin.name}: ${usdtValue} USDT (spot rate: ${rate})`);
+            }
+          } catch (spotError) {
+            console.error(`Error fetching spot rate for ${coin.name}:`, spotError.message);
+            continue;
+          }
         }
       }
 
-      setTotalApprovedAmount(total.toFixed(3));
+      setTotalApprovedAmount(total.toFixed(0));
     } catch (error) {
       console.error("Error calculating total in USDT:", error);
       setTotalApprovedAmount("0.000");
@@ -415,7 +438,7 @@ const StackingBanner = () => {
                 <h4 className="text-[18px] font-medium">Total Balance</h4>
                 <div className="flex items-center gap-5 mt-5">
                   <h1 className="font-[700] text-3xl sm:text-[40px]">
-                    ${totalApprovedAmount}
+                    USDT {totalApprovedAmount}
                   </h1>
                   {/* <div className="bg-[#CBF5E5] p-[9px] text-[#176448] font-medium text-sm sm:text-[17px] rounded-full">
                     +24%
